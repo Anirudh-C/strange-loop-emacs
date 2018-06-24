@@ -38,7 +38,7 @@ Load =use-package= while compiling
 ** Tell Emacs who I am
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Anirudh C"
-      user-mail-address "anirudhvan@gmail.com")
+      user-mail-address "anirudh.c@iiitb.org")
 #+END_SRC
 ** Cosmetics
 I need emacs to look exactly like I want it to, so
@@ -267,11 +267,114 @@ I do some web development and hence I need some help there
   :ensure t)
 #+END_SRC
 ** Org Mode
+*** Display
+How I want org-mode to look
 #+BEGIN_SRC emacs-lisp
 ;; Tell emacs to start org mode in all .org files
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 ;; Hide the leading stars and start org mode with indented structure
 (setq org-hide-leading-stars t org-startup-indented t)
+;; Use the nice down arrow to display folded content in org headlines
+(setq org-ellipsis "⤵")
+#+END_SRC
+*** Tasks and Org-Capture
+I have all my org files in a directory =~/org/= and I also have an index file which has all my TODOs in an outline and
+I also have an archive file to archive my completed TODOs. I have a special file for my ideas which are basically TODOs without a deadline
+#+BEGIN_SRC emacs-lisp
+(setq org-directory "~/org")
+#+END_SRC
+I need a helper function to point to my orgfiles' absolute path using the relative path
+#+BEGIN_SRC emacs-lisp
+(defun org-file-path (filename)
+  "Return the absolute address of an org file, given its relative name."
+  (concat (file-name-as-directory org-directory) filename))
+#+END_SRC
+Now I can set my index file location and ideas file location
+#+BEGIN_SRC emacs-lisp
+(setq org-index-file (org-file-path "index.org"))
+(setq org-idea-file (org-file-path "ideas.org"))
+#+END_SRC
+I can also setup my archive file
+#+BEGIN_SRC emacs-lisp
+(setq org-archive-location
+      (concat (org-file-path "archive.org") "::* From %s"))
+#+END_SRC
+I need org-agenda to tell me my TODOs from =index.org=
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-files (list org-index-file org-idea-file))
+#+END_SRC
+I want to archive my TODOs into =archive.org= when I finish them
+#+BEGIN_SRC emacs-lisp
+(defun done-and-dusted ()
+  "Mark the state of an org-mode item as DONE and archive it."
+  (interactive)
+  (org-todo 'done)
+  (org-archive-subtree))
+#+END_SRC
+Hitting =C-c C-x C-s= should mark my todo as done and move it to =archive.org=
+#+BEGIN_SRC emacs-lisp
+(define-key org-mode-map (kbd "C-c C-x C-s") 'done-and-dusted)
+#+END_SRC
+I want to know when I did these tasks as well
+#+BEGIN_SRC emacs-lisp
+(setq org-log-done 'time)
+#+END_SRC
+Now for the fun bit. I need a way to capture ideas easily and put them into the files I define
+- I need to capture TODOs for my general TODO list
+- I need to add ideas that I get into other TODOs
+#+BEGIN_SRC emacs-lisp
+(setq org-capture-templates
+      '(("t" "Todo"
+         entry
+         (file org-index-file)
+         "* TODO %^{Todo} %^G \nDEADLINE: %^{Deadline}t \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")
+         ("i" "Idea"
+          entry
+          (file "ideas.org")
+          "* TODO %^{Todo} %^G \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")))
+#+END_SRC
+I need to start adding text immediately when I start an org capture template (Insert mode)
+#+BEGIN_SRC emacs-lisp
+(add-hook 'org-capture-mode-hook 'evil-insert-state)
+#+END_SRC
+Some basic keybindings
+#+BEGIN_SRC emacs-lisp
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(define-key global-map "\C-cc" 'org-capture)
+#+END_SRC
+I want to open my index file using =C-c i=
+#+BEGIN_SRC emacs-lisp
+(defun open-index ()
+  "Open the master org TODO list."
+  (interactive)
+  (find-file org-index-file)
+  (end-of-buffer))
+(global-set-key (kbd "C-c i") 'open-index)
+#+END_SRC
+*** Export
+Allow =babel= to evaluate emacs lisp, python, C, C++ and gnuplot code
+#+BEGIN_SRC emacs-lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (python . t)
+   (C . t)
+   (gnuplot . t)))
+#+END_SRC
+Make =babel= evaluate code blocks without confirmation
+#+BEGIN_SRC emacs-lisp
+(setq org-confirm-babel-evaluate nil)
+#+END_SRC
+Remove the footer in HTML exports
+#+BEGIN_SRC emacs-lisp
+(setq org-html-postamble nil)
+#+END_SRC
+Open the exported HTML files in FireFox
+#+BEGIN_SRC emacs-lisp
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "firefox")
+(setenv "BROWSER" "firefox")
 #+END_SRC
 ** Hydra
 Create menus to hint at keybindings where keybindings are a pain
@@ -492,4 +595,27 @@ _vr_ reset      ^^                       ^^                 ^^
   ("gd" org-agenda-goto-date)
   ("." org-agenda-goto-today)
   ("gr" org-agenda-redo))
+#+END_SRC
+** Config Sugar
+Make all prompts y or n instead of yes or no
+#+BEGIN_SRC emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+Open my config quickly
+#+BEGIN_SRC emacs-lisp
+(defun open-config ()
+  "Open the config file"
+  (interactive)
+  (find-file "~/.emacs.d/config.org")
+  (end-of-buffer))
+(global-set-key (kbd "C-c e") 'open-config)
+#+END_SRC
+Refresh the configuration inplace without restarting emacs
+#+BEGIN_SRC emacs-lisp
+(defun reload-config ()
+  "Reload config on the fly without restarting emacs"
+  (interactive)
+  (load-file "~/.emacs.d/init.el")
+  (message "Reloaded Config"))
+(global-set-key (kbd "C-c C-r") 'reload-config)
 #+END_SRC
