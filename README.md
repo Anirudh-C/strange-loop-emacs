@@ -32,6 +32,6 @@ Emacs. Emacs will regenerate <kbd>config.el</kbd> and run it again.
 
 - You might be wondering what the <kbd>custom.el</kbd> file is for. It is a file that is populated by the Customize option of Emacs. If you don't
   have that file Emacs will throw some angry text at you. Just remove the line that separates my custom options from the <kbd>config.org</kbd> file
-  and Emacs will dump all of it in the =init.el= file.
+  and Emacs will dump all of it in the <kbd>init.el</kbd> file.
 - There might be some compile-time *Warnings* when Emacs compiles these configurations for the first time. Let me know, if you know what they signify.
      
