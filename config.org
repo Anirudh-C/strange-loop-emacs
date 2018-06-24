@@ -1,0 +1,261 @@
+* fiddler-emacs
+** Setup =package.el=
+Load =package.el=
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+#+END_SRC
+Add common package archives
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
+#+END_SRC
+Ensure that packages aren't loaded again after processing the init file
+#+BEGIN_SRC emacs-lisp
+(setq package-enable-at-startup nil)
+#+END_SRC
+Initialize the package installation
+#+BEGIN_SRC emacs-lisp
+(package-initialize)
+#+END_SRC
+Customize puts a lot of stuff into my =init.el=
+#+BEGIN_SRC emacs-lisp
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
+#+END_SRC
+** Configure =use-package=
+Install =use-package= if not installed
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+#+END_SRC
+Load =use-package= while compiling
+#+BEGIN_SRC emacs-lisp
+(eval-when-compile
+  (require 'use-package))
+#+END_SRC
+** Tell Emacs who I am
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Anirudh C"
+      user-mail-address "anirudhvan@gmail.com")
+#+END_SRC
+** Cosmetics
+I need emacs to look exactly like I want it to, so
+start by removing the default startup buffer
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-splash-screen t
+      inhibit-startup-message t
+      inhibit-startup-echo-area-message t)
+#+END_SRC
+Also remove the scrollbar, menubar and toolbar
+#+BEGIN_SRC emacs-lisp
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(when (boundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+#+END_SRC 
+When I use emacs I deal with a lot of parentheses, I want emacs
+to match them for me and do it colourfully
+#+BEGIN_SRC emacs-lisp
+(show-paren-mode 1)
+(use-package rainbow-delimiters
+    :ensure t
+    :init
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+#+END_SRC
+I also use tabs(size 4) in emacs but I don't want TeX to get confused
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil)
+(setq tab-width 4)
+#+END_SRC
+I also don't want emacs telling me I'm opening a large file
+#+BEGIN_SRC emacs-lisp
+(setq large-file-warning-threshold nil)
+#+END_SRC
+I use the [[https://draculatheme.com][dracula]] theme. I need emacs to know that it can load
+all my themes (because they are safe)
+#+BEGIN_SRC emacs-lisp
+(setq custom-safe-themes t)
+#+END_SRC
+I also want emacs to tell me which column I am in the buffer
+#+BEGIN_SRC emacs-lisp
+(column-number-mode t)
+#+END_SRC
+I don't like trailing whitespaces as it messes so many things up
+#+BEGIN_SRC emacs-lisp
+(defun my/buf-show-trailing-whitespace ()
+  (interactive)
+    (setq show-trailing-whitespace t))
+(add-hook 'prog-mode-hook 'my/buf-show-trailing-whitespace)
+#+END_SRC 
+Now for the major cosmetic changes.
+
+I love the dracula theme and so I use it here as well
+#+BEGIN_SRC emacs-lisp
+(use-package dracula-theme
+  :ensure t
+  :config
+  (load-theme 'dracula t))
+#+END_SRC 
+I need to know some important information in my mode-line.
+
+But I also need it to look pretty
+#+BEGIN_SRC emacs-lisp
+(use-package spaceline
+  :ensure t
+  :config
+  (spaceline-spacemacs-theme)
+  (spaceline-helm-mode 1)
+  (setq-default powerline-default-separator 'wave)
+  (setq-default spaceline-separator-dir-left '(left . left))
+  (setq-default spaceline-separator-dir-right '(right . right))
+  (setq-default spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
+  (spaceline-compile)
+  (spaceline-toggle-minor-modes-off))
+#+END_SRC 
+** User Interface
+First I need to address the fact that I use Alt for my window manager.
+#+BEGIN_SRC emacs-lisp
+(setq x-super-keysym 'meta)
+#+END_SRC
+Also I need to be able to edit my config in emacs and restart emacs
+in emacs
+#+BEGIN_SRC emacs-lisp
+(use-package restart-emacs
+             :ensure t)
+(use-package magit
+             :ensure t)
+#+END_SRC
+*** Evil
+I need vim within emacs to edit text efficiently
+#+BEGIN_SRC emacs-lisp
+(use-package evil
+             :ensure t
+             :config (evil-mode))
+#+END_SRC 
+I need to be able to use vim's composability for commands
+#+BEGIN_SRC emacs-lisp
+(use-package evil-leader
+             :ensure t
+             :config
+             (global-evil-leader-mode)
+             (evil-leader/set-leader ","))
+#+END_SRC
+I also have some trusty plugins in vim, which I can use here
+#+BEGIN_SRC emacs-lisp
+;; I want to comment stuff easily
+(use-package evil-nerd-commenter
+  :ensure t
+  :config
+  (evilnc-default-hotkeys))
+;; I want to be able to delete limiters with vim text object like
+;; motions
+(use-package evil-surround
+  :ensure t
+  :config (global-evil-surround-mode 1))
+;; I also need emacs to complete my parentheses as and when I want
+(use-package smartparens
+  :ensure t
+  :config
+  (require 'smartparens-config)
+  (smartparens-mode))
+;; I press Esc a lot. Let's make that easy once and for all
+(use-package evil-escape
+  :ensure t
+  :config
+  (evil-escape-mode)
+  (setq-default evil-escape-key-sequence "jk"))
+;; I tend to do a lot of re-factoring wish I had more cursors
+(use-package multiple-cursors
+  :ensure t)
+;; In a large buffer I need to jump to a particular place easily  
+(use-package evil-easymotion
+  :ensure t
+  :config
+  (evilem-default-keybindings "SPC"))
+#+END_SRC
+*** Helm
+While using emacs I tend to view a lot off lists.
+Wish I could fuzzy search all of them and narrow them down
+#+BEGIN_SRC emacs-lisp
+(use-package helm
+             :ensure t
+             :bind (("M-x" . helm-M-x))
+             :config
+             (helm-mode 1)
+             (setq helm-mode-fuzzy-match t)
+             (setq helm-candidate-number-limit 40)
+             (setq helm-completion-in-region-fuzzy-match t)
+             (setq helm-autoresize-mode t))
+#+END_SRC
+*** Projects
+I use git to manage my projects and I need emacs to integrate a
+git porcelain framework for me to us
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :ensure t
+  :config
+  (with-eval-after-load 'evil
+    (evil-leader/set-key
+      "g" 'magit-status)))
+;; I want to use vim bindings here as well
+(use-package evil-magit
+  :ensure t)
+;; I need to search for files in a project
+(use-package projectile
+  :ensure t
+  :config (projectile-mode))
+;; I need helm to work here as well  
+(use-package helm-projectile
+  :ensure t)
+#+END_SRC
+I also don't need backup and autosave files because I use git
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil
+      auto-save-default nil)
+#+END_SRC
+** Environments
+*** Markdown
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+#+END_SRC
+*** Web
+I do some web development and hence I need some help there
+#+BEGIN_SRC emacs-lisp
+;; Understand css
+(use-package css-mode
+  :ensure t
+  :config
+  (add-hook 'css-mode-hook (lambda ()
+(rainbow-mode))))
+;; Improve HTML and CSS workflow
+(use-package emmet-mode
+  :ensure t
+  :commands emmet-mode)
+;; HTML template editing  
+(use-package web-mode
+  :ensure t
+  :defer t
+  :config
+  (setq web-mode-attr-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-indent-style 2)
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-sql-indent-offset 2))
+;; Some JS help
+(use-package js2-mode
+  :ensure t)
+#+END_SRC
+*** Org Mode
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(setq org-hide-leading-stars t org-startup-indented t)
+#+END_SRC
