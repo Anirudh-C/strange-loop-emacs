@@ -617,5 +617,5 @@ Refresh the configuration inplace without restarting emacs
   (interactive)
   (load-file "~/.emacs.d/init.el")
   (message "Reloaded Config"))
-(global-set-key (kbd "C-c C-r") 'reload-config)
+(global-set-key (kbd "C-c r") 'reload-config)
 #+END_SRC
