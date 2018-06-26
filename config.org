@@ -362,6 +362,10 @@ Allow =babel= to evaluate emacs lisp, python, C, C++ and gnuplot code
    (C . t)
    (gnuplot . t)))
 #+END_SRC
+I want tabs in the code blocks to behave similar to the correspoding major mode
+#+BEGIN_SRC emacs-lisp
+(setq org-src-tab-acts-natively t)
+#+END_SRC
 Make =babel= evaluate code blocks without confirmation
 #+BEGIN_SRC emacs-lisp
 (setq org-confirm-babel-evaluate nil)
@@ -375,6 +379,16 @@ Open the exported HTML files in FireFox
 (setq browse-url-browser-function 'browse-url-generic
       browse-url-generic-program "firefox")
 (setenv "BROWSER" "firefox")
+#+END_SRC
+*** Help
+I have a file on my orgfiles which is a document on the keybindings in org. I want to open it quickly.
+#+BEGIN_SRC emacs-lisp
+(defun open-org-help ()
+  "Open my org mode help file"
+  (interactive)
+  (find-file "~/org/org-cheat-sheet.org")
+  (end-of-buffer))
+(global-set-key (kbd "C-c h") 'open-org-help)
 #+END_SRC
 ** Hydra
 Create menus to hint at keybindings where keybindings are a pain
