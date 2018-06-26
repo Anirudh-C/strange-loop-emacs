@@ -201,6 +201,11 @@ Wish I could fuzzy search all of them and narrow them down
              ;; Resize the helm buffer to make the overall experience neat.
              (setq helm-autoresize-mode t))
 #+END_SRC
+I tend not to use splits or tabs because there is so much you can do with just buffers. 
+But the default buffer management system using =(list-buffers)= is horrendous, so I use helm there
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x C-b") 'helm-buffers-list)
+#+END_SRC
 *** Projects
 I use git to manage my projects and I need emacs to integrate a
 git porcelain framework for me to us
