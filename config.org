@@ -131,6 +131,13 @@ in emacs
 (use-package restart-emacs
              :ensure t)
 #+END_SRC
+Make a sratch buffer from thin air
+#+BEGIN_SRC emacs-lisp
+(defun gen-scratch ()
+  "Create and switch to a temporary scratch buffer with a random name."
+  (interactive)
+  (switch-to-buffer (make-temp-name "scratch-")))
+#+END_SRC
 *** Evil
 I need vim within emacs to edit text efficiently
 #+BEGIN_SRC emacs-lisp
