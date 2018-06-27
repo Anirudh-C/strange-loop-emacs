@@ -41,6 +41,7 @@ Load =use-package= while compiling
       user-mail-address "anirudh.c@iiitb.org")
 #+END_SRC
 ** Cosmetics
+*** Theme
 I need emacs to look exactly like I want it to, so
 start by removing the default startup buffer
 #+BEGIN_SRC emacs-lisp
@@ -73,8 +74,6 @@ I also don't want emacs telling me I'm opening a large file
 #+BEGIN_SRC emacs-lisp
 (setq large-file-warning-threshold nil)
 #+END_SRC
-I use the [[https://draculatheme.com][dracula]] theme. I need emacs to know that it can load
-all my themes (because they are safe)
 #+BEGIN_SRC emacs-lisp
 (setq custom-safe-themes t)
 #+END_SRC
@@ -89,37 +88,17 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
 (add-hook 'prog-mode-hook 'my/buf-show-trailing-whitespace)
 #+END_SRC 
-Now for the major cosmetic changes.
-
-I love the dracula theme and so I use it here as well
+Now for the major cosmetic changes. Set doom-dracula theme
 #+BEGIN_SRC emacs-lisp
-(use-package dracula-theme
-  :ensure t
-  :config
-  (load-theme 'dracula t))
-#+END_SRC 
-I need to know some important information in my mode-line.
-
-But I also need it to look pretty
-#+BEGIN_SRC emacs-lisp
-(use-package spaceline
-  :ensure t
-  :config
-  ;; Set the theme to the spacemacs default
-  (spaceline-spacemacs-theme)
-  ;; Enable helm (sweet)
-  (spaceline-helm-mode 1)
-  ;; Set the default separator and define the direction they show
-  (setq-default powerline-default-separator 'wave)
-  (setq-default spaceline-separator-dir-left '(left . left))
-  (setq-default spaceline-separator-dir-right '(right . right))
-  ;; Make the evil-state display colorful
-  (setq-default spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
-  ;; Compile the modeline after setting these attributes
-  (spaceline-compile)
-  ;; Remove the minor modes in the mode line
-  (spaceline-toggle-minor-modes-off))
-#+END_SRC 
+(use-package doom-themes
+             :ensure t
+             :config
+             (setq doom-themes-enable-bold t
+                   doom-themes-enable-italic t)
+             (load-theme 'doom-dracula t)
+             (doom-themes-org-config))
+#+END_SRC
+*** Modeline
 ** User Interface
 First I need to address the fact that I use Alt for my window manager.
 #+BEGIN_SRC emacs-lisp
