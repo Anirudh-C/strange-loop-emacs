@@ -199,6 +199,7 @@ git porcelain framework for me to us
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :ensure t)
+(global-set-key (kbd "C-x g") 'magit)
 ;; I want to use vim bindings here as well
 (use-package evil-magit
   :ensure t)
