@@ -99,6 +99,20 @@ Now for the major cosmetic changes. Set doom-dracula theme
              (doom-themes-org-config))
 #+END_SRC
 *** Modeline
+Dependencies
+#+BEGIN_SRC emacs-lisp
+(use-package shrink-path
+             :ensure t)
+(use-package all-the-icons
+             :ensure t)
+(use-package eldoc-eval
+             :ensure t)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/elpa/doom-modeline")
+(require 'doom-modeline)
+(doom-modeline-init)
+#+END_SRC
 ** User Interface
 First I need to address the fact that I use Alt for my window manager.
 #+BEGIN_SRC emacs-lisp
