@@ -247,6 +247,8 @@ I also don't need backup and autosave files because I use git
 I do some web development and hence I need some help there
 #+BEGIN_SRC emacs-lisp
 ;; Understand css
+(use-package rainbow-mode
+             :ensure t)
 (use-package css-mode
   :ensure t
   :config
