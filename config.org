@@ -564,6 +564,22 @@ T - tag prefix
 
 (define-key dired-mode-map "." 'hydra-dired/body)
 #+END_SRC
+** Completion
+I use company for an inline completion
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :ensure t
+  :defer t
+  :init
+  (global-company-mode)
+  :config
+  (setq company-idle-delay 0.4)
+  (setq company-selection-wrap-around t)
+  (define-key company-active-map (kbd "jk") 'company-abort)
+  (define-key company-active-map (kbd "C-n") 'company-select-next)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous)
+  (global-set-key (kbd "TAB") 'company-complete-common))
+#+END_SRC
 ** Config Sugar
 Make all prompts y or n instead of yes or no
 #+BEGIN_SRC emacs-lisp
