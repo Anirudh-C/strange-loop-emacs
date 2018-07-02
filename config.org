@@ -351,7 +351,11 @@ Now for the fun bit. I need a way to capture ideas easily and put them into the 
          ("b" "Books"
           table-line
           (file "books.org")
-          "| %^{Title} | %^{Author} | %^{Category} |")))
+          "| %^{Title} | %^{Author} | %^{Category} |")
+         ("j" "Journal Entry"
+          entry
+          (file "journal.org")
+          "** %U %^{Title}\n%?")))
 #+END_SRC
 I need to start adding text immediately when I start an org capture template (Insert mode)
 #+BEGIN_SRC emacs-lisp
