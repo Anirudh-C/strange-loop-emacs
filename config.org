@@ -385,6 +385,15 @@ I want to open the books database using =C-c b=
   (end-of-buffer))
 (global-set-key (kbd "C-c b") 'open-book)
 #+END_SRC
+I want to open my journal using =C-c j=
+#+BEGIN_SRC emacs-lisp
+(defun open-journal ()
+  "Open the master org TODO list."
+  (interactive)
+  (find-file "~/org/journal.org")
+  (end-of-buffer))
+(global-set-key (kbd "C-c j") 'open-journal)
+#+END_SRC
 Org Agenda has extremely confusing keybindings
 #+BEGIN_SRC emacs-lisp
 (eval-after-load 'org-agenda
