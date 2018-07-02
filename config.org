@@ -41,6 +41,11 @@ Load =use-package= while compiling
       user-mail-address "anirudh.c@iiitb.org")
 #+END_SRC
 ** Cosmetics
+I don't like the default startup area message
+#+BEGIN_SRC emacs-lisp
+(defun display-startup-echo-area-message ()
+  (message "Welcome to Fiddler-Emacs"))
+#+END_SRC
 *** Theme
 I need emacs to look exactly like I want it to, so
 start by removing the default startup buffer
