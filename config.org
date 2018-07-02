@@ -336,6 +336,8 @@ I want to know when I did these tasks as well
 Now for the fun bit. I need a way to capture ideas easily and put them into the files I define
 - I need to capture TODOs for my general TODO list
 - I need to add ideas that I get into other TODOs
+- I have a table of all the books I have in a table
+- I have to use notes with org drill
 #+BEGIN_SRC emacs-lisp
 (setq org-capture-templates
       '(("t" "Todo"
@@ -345,7 +347,11 @@ Now for the fun bit. I need a way to capture ideas easily and put them into the 
          ("i" "Idea"
           entry
           (file "ideas.org")
-          "* TODO %^{Todo} %^G \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")))
+          "* TODO %^{Todo} %^G \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")
+         ("b" "Books"
+          table-line
+          (file "books.org")
+          "| %^{Title} | %^{Author} | %^{Category} |")))
 #+END_SRC
 I need to start adding text immediately when I start an org capture template (Insert mode)
 #+BEGIN_SRC emacs-lisp
@@ -353,10 +359,10 @@ I need to start adding text immediately when I start an org capture template (In
 #+END_SRC
 Some basic keybindings
 #+BEGIN_SRC emacs-lisp
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-(define-key global-map "\C-cc" 'org-capture)
-(define-key global-map (kbd "C-c C-x s") 'org-save-all-org-buffers)
+  (define-key global-map "\C-cl" 'org-store-link)
+  (define-key global-map "\C-ca" 'org-agenda)
+  (define-key global-map "\C-cc" 'org-capture)
+  (define-key global-map (kbd "C-c C-x s") 'org-save-all-org-buffers)
 #+END_SRC
 I want to open my index file using =C-c i=
 #+BEGIN_SRC emacs-lisp
@@ -366,6 +372,15 @@ I want to open my index file using =C-c i=
   (find-file org-index-file)
   (end-of-buffer))
 (global-set-key (kbd "C-c i") 'open-index)
+#+END_SRC
+I want to open the books database using =C-c b=
+#+BEGIN_SRC emacs-lisp
+(defun open-book ()
+  "Open the books database."
+  (interactive)
+  (find-file "~/org/books.org")
+  (end-of-buffer))
+(global-set-key (kbd "C-c b") 'open-book)
 #+END_SRC
 Org Agenda has extremely confusing keybindings
 #+BEGIN_SRC emacs-lisp
