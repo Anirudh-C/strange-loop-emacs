@@ -337,7 +337,6 @@ Now for the fun bit. I need a way to capture ideas easily and put them into the 
 - I need to capture TODOs for my general TODO list
 - I need to add ideas that I get into other TODOs
 - I have a table of all the books I have in a table
-- I have to use notes with org drill
 #+BEGIN_SRC emacs-lisp
 (setq org-capture-templates
       '(("t" "Todo"
@@ -493,6 +492,34 @@ Active when in Emacs' `calendar-mode'."
   "e" 'calendar-end-of-week
   "E" 'calendar-end-of-month
 "$" 'calendar-end-of-year)
+#+END_SRC
+*** Notes and Org-Drill
+I want to be able to learn from my notes, that is, I want to Emacs to drill my notes so that I can learn
+First I need to setup a method to generate the note filename on the fly.
+#+BEGIN_SRC emacs-lisp
+(defun generate-note ()
+  "Generate a note in the notes directory"
+  (setq note-name (read-string "File: "))
+  (expand-file-name (format "%s.org" note-name) "~/org/notes/"))
+#+END_SRC
+After this I need to generate the template that has to be inserted
+#+BEGIN_SRC emacs-lisp
+(defun generate-note-template ()
+  "Generate the template for the note without the timestamp"
+  (concat (format "#+TITLE: %s" note-name) "\n#+AUTHOR: Anirudh C\n" (format "\n* %s" note-name)))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'org-capture-templates '("n" "Notes"
+                                       plain
+                                       (file generate-note)
+                                       ;; Add timestamp
+                                       "%(concat (generate-note-template) \"\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?\")"))
+#+END_SRC
+Now for org drill
+#+BEGIN_SRC emacs-lisp
+(require 'org-drill)
+(setq org-drill-use-visible-cloze-face-p t)
+(setq org-drill-hide-item-headings-p t)
 #+END_SRC
 *** Export
 Allow =babel= to evaluate emacs lisp, python, C, C++ and gnuplot code
