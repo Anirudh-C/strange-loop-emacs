@@ -350,7 +350,7 @@ Now for the fun bit. I need a way to capture ideas easily and put them into the 
          ("b" "Books"
           table-line
           (file "books.org")
-          "| %^{Title} | %^{Author} | %^{Category} |")
+          "| %^{Title} | %^{Author} | %^{Category} | %^L |")
          ("j" "Journal Entry"
           entry
           (file "journal.org")
