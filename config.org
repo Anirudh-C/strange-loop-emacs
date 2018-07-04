@@ -137,6 +137,11 @@ Make a sratch buffer from thin air
   (switch-to-buffer (make-temp-name "scratch-")))
 (global-set-key (kbd "C-s") 'gen-scratch)
 #+END_SRC
+Perform easy buffer navigation
+#+BEGIN_SRC emacs-lisp
+(define-key evil-normal-state-map (kbd "{") 'evil-next-buffer)
+(define-key evil-normal-state-map (kbd "}") 'evil-prev-buffer)
+#+END_SRC
 *** Evil
 I need vim within emacs to edit text efficiently
 #+BEGIN_SRC emacs-lisp
