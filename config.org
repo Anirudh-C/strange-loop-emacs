@@ -139,6 +139,10 @@ Make a sratch buffer from thin air
 #+END_SRC
 Perform easy buffer navigation
 #+BEGIN_SRC emacs-lisp
+;; This needs to be loaded before the buffer navigation mapping.
+(require 'evil-states)
+(require 'evil-commands)
+;; The actual mapping
 (define-key evil-normal-state-map (kbd "{") 'evil-next-buffer)
 (define-key evil-normal-state-map (kbd "}") 'evil-prev-buffer)
 #+END_SRC
