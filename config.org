@@ -187,7 +187,7 @@ I also have some trusty plugins in vim, which I can use here
   :ensure t
   :config
   (require 'smartparens-config)
-  (smartparens-mode))
+  (smartparens-global-mode))
 ;; I press Esc a lot. Let's make that easy once and for all
 (use-package evil-escape
   :ensure t
@@ -295,6 +295,17 @@ I do some web development and hence I need some help there
 ;; Some JS help
 (use-package js2-mode
   :ensure t)
+#+END_SRC
+*** Clojure
+Install Clojure mode
+#+BEGIN_SRC emacs-lisp
+(use-package clojure-mode
+             :ensure t)
+#+END_SRC
+Install CIDER
+#+BEGIN_SRC emacs-lisp
+(use-package cider
+             :ensure t)
 #+END_SRC
 ** Org Mode
 *** Display
