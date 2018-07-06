@@ -114,9 +114,11 @@ Dependencies
              :ensure t)
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/elpa/doom-modeline")
-(require 'doom-modeline)
-(doom-modeline-init)
+(use-package doom-modeline
+      :ensure t
+      :defer t
+      :requires (shrink-path eldoc-eval)
+      :hook (after-init . doom-modeline-init))
 #+END_SRC
 ** User Interface
 First I need to address the fact that I use Alt for my window manager.
