@@ -66,9 +66,9 @@ to match them for me and do it colourfully
 #+BEGIN_SRC emacs-lisp
 (show-paren-mode 1)
 (use-package rainbow-delimiters
-    :ensure t
-    :init
-    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+  :ensure t
+  :init
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 #+END_SRC
 I also use tabs(size 4) in emacs but I don't want TeX to get confused
 #+BEGIN_SRC emacs-lisp
@@ -96,12 +96,12 @@ I don't like trailing whitespaces as it messes so many things up
 Now for the major cosmetic changes. Set doom-dracula theme
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes
-             :ensure t
-             :config
-             (setq doom-themes-enable-bold t
-                   doom-themes-enable-italic t)
-             (load-theme 'doom-dracula t)
-             (doom-themes-org-config))
+  :ensure t
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-dracula t)
+  (doom-themes-org-config))
 #+END_SRC
 *** Modeline
 Dependencies
@@ -129,7 +129,7 @@ Also I need to be able to edit my config in emacs and restart emacs
 in emacs
 #+BEGIN_SRC emacs-lisp
 (use-package restart-emacs
-             :ensure t)
+  :ensure t)
 #+END_SRC
 Make a sratch buffer from thin air
 #+BEGIN_SRC emacs-lisp
@@ -156,18 +156,18 @@ Start a server so that I can connect via emacsclient
 I need vim within emacs to edit text efficiently
 #+BEGIN_SRC emacs-lisp
 (use-package evil
-             :ensure t
-             :config (evil-mode))
+  :ensure t
+  :config (evil-mode))
 #+END_SRC 
 I need to be able to use vim's composability for commands
 #+BEGIN_SRC emacs-lisp
 (use-package evil-leader
-             :ensure t
-             :config
-             ;; Load evil mode everywhere
-             (global-evil-leader-mode)
-             ;; Set the default leader key to , instead of \.
-             (evil-leader/set-leader ","))
+  :ensure t
+  :config
+  ;; Load evil mode everywhere
+  (global-evil-leader-mode)
+  ;; Set the default leader key to , instead of \.
+  (evil-leader/set-leader ","))
 #+END_SRC
 I also have some trusty plugins in vim, which I can use here
 #+BEGIN_SRC emacs-lisp
@@ -208,19 +208,19 @@ While using emacs I tend to view a lot off lists.
 Wish I could fuzzy search all of them and narrow them down
 #+BEGIN_SRC emacs-lisp
 (use-package helm
-             :ensure t
-             ;; Change normal M-x to helm's M-x
-             :bind (("M-x" . helm-M-x))
-             :config
-             ;; Start helm-mode always
-             (helm-mode 1)
-             ;; Do fuzzy matching as and when possible
-             (setq helm-mode-fuzzy-match t)
-             (setq helm-completion-in-region-fuzzy-match t)
-             ;; Aid the fuzzy matching by reducing the number of candidates
-             (setq helm-candidate-number-limit 40)
-             ;; Resize the helm buffer to make the overall experience neat.
-             (setq helm-autoresize-mode t))
+  :ensure t
+  ;; Change normal M-x to helm's M-x
+  :bind (("M-x" . helm-M-x))
+  :config
+  ;; Start helm-mode always
+  (helm-mode 1)
+  ;; Do fuzzy matching as and when possible
+  (setq helm-mode-fuzzy-match t)
+  (setq helm-completion-in-region-fuzzy-match t)
+  ;; Aid the fuzzy matching by reducing the number of candidates
+  (setq helm-candidate-number-limit 40)
+  ;; Resize the helm buffer to make the overall experience neat.
+  (setq helm-autoresize-mode t))
 #+END_SRC
 I tend not to use splits or tabs because there is so much you can do with just buffers. 
 But the default buffer management system using =(list-buffers)= is horrendous, so I use helm there
@@ -246,6 +246,15 @@ git porcelain framework for me to us
 (use-package helm-projectile
   :ensure t)
 #+END_SRC
+Sometimes it is a pain to go to github to search for stuff
+#+BEGIN_SRC emacs-lisp
+(use-package magithub
+  :ensure t
+  :after magit
+  :config
+  (magithub-feature-autoinject t)
+  (setq magithub-clone-default-directory "~/github"))
+#+END_SRC
 I also don't need backup and autosave files because I use git
 #+BEGIN_SRC emacs-lisp
 (setq make-backup-files nil
@@ -269,7 +278,7 @@ I do some web development and hence I need some help there
 #+BEGIN_SRC emacs-lisp
 ;; Understand css
 (use-package rainbow-mode
-             :ensure t)
+  :ensure t)
 (use-package css-mode
   :ensure t
   :config
@@ -300,12 +309,12 @@ I do some web development and hence I need some help there
 Install Clojure mode
 #+BEGIN_SRC emacs-lisp
 (use-package clojure-mode
-             :ensure t)
+  :ensure t)
 #+END_SRC
 Install CIDER
 #+BEGIN_SRC emacs-lisp
 (use-package cider
-             :ensure t)
+  :ensure t)
 #+END_SRC
 ** Org Mode
 *** Display
@@ -575,15 +584,14 @@ Now for org drill
 I use org brain for concept mapping
 #+BEGIN_SRC emacs-lisp
 (use-package org-brain
-             :ensure t
-             :init
-             (setq org-brain-path "~/brain")
-             :config
-             (setq org-id-track-globally t)
-             (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
-             (with-eval-after-load 'evil
-               (evil-set-initial-state 'org-brain-visualize-mode 'normal)))
-
+  :ensure t
+  :init
+  (setq org-brain-path "~/brain")
+  :config
+  (setq org-id-track-globally t)
+  (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
+  (with-eval-after-load 'evil
+    (evil-set-initial-state 'org-brain-visualize-mode 'normal)))
 (global-set-key (kbd "C-;") 'org-brain-visualize)
 #+END_SRC
 I want to have a nice looking map
@@ -672,7 +680,7 @@ Create menus to hint at keybindings where keybindings are a pain
 #+BEGIN_SRC emacs-lisp
 ;; Install hydra
 (use-package hydra
-             :ensure t)
+  :ensure t)
 #+END_SRC
 Hydras that I need
 *** Dired
