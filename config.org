@@ -319,6 +319,7 @@ How I want org-mode to look
 (setq org-ellipsis "⤵")
 #+END_SRC
 *** Tasks and Org-Capture
+**** Basic Setup
 I have all my org files in a directory =~/org/= and I also have an index file which has all my TODOs in an outline and
 I also have an archive file to archive my completed TODOs. I have a special file for my ideas which are basically TODOs without a deadline
 #+BEGIN_SRC emacs-lisp
@@ -334,6 +335,7 @@ Now I can set my index file location and ideas file location
 #+BEGIN_SRC emacs-lisp
 (setq org-index-file (org-file-path "index.org"))
 (setq org-idea-file (org-file-path "ideas.org"))
+(setq org-projects-file (org-file-path "projects.org"))
 #+END_SRC
 I can also setup my archive file
 #+BEGIN_SRC emacs-lisp
@@ -342,7 +344,7 @@ I can also setup my archive file
 #+END_SRC
 I need org-agenda to tell me my TODOs from =index.org=
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-files (list org-index-file org-idea-file))
+(setq org-agenda-files (list org-index-file org-idea-file org-projects-file))
 #+END_SRC
 I want to archive my TODOs into =archive.org= when I finish them
 #+BEGIN_SRC emacs-lisp
@@ -352,46 +354,60 @@ I want to archive my TODOs into =archive.org= when I finish them
   (org-todo 'done)
   (org-archive-subtree))
 #+END_SRC
-Hitting =C-c C-x C-s= should mark my todo as done and move it to =archive.org=
-#+BEGIN_SRC emacs-lisp
-(define-key org-mode-map (kbd "C-c C-x C-s") 'done-and-dusted)
-#+END_SRC
 I want to know when I did these tasks as well
 #+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
-#+END_SRC
-Now for the fun bit. I need a way to capture ideas easily and put them into the files I define
-- I need to capture TODOs for my general TODO list
-- I need to add ideas that I get into other TODOs
-- I have a table of all the books I have in a table
-#+BEGIN_SRC emacs-lisp
-(setq org-capture-templates
-      '(("t" "Todo"
-         entry
-         (file org-index-file)
-         "* TODO %^{Todo} %^G \nDEADLINE: %^{Deadline}t \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")
-         ("i" "Idea"
-          entry
-          (file "ideas.org")
-          "* TODO %^{Todo} %^G \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")
-         ("b" "Books"
-          table-line
-          (file "books.org")
-          "| %^{Title} | %^{Author} | %^{Category} | %^L |")
-         ("j" "Journal Entry"
-          entry
-          (file "journal.org")
-          "** %U %^{Title}\n%?")))
 #+END_SRC
 I need to start adding text immediately when I start an org capture template (Insert mode)
 #+BEGIN_SRC emacs-lisp
 (add-hook 'org-capture-mode-hook 'evil-insert-state)
 #+END_SRC
+**** Capture Templates
+- Todo template
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'org-capture-templates '("t" "Todo"
+                                          entry
+                                          (file org-index-file)
+                                          "* TODO %^{Todo} %^G \nDEADLINE: %^{Deadline}t \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?"))
+  #+END_SRC
+- Idea template
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'org-capture-templates '("i" "Idea"
+                                          entry
+                                          (file "ideas.org")
+                                          "* TODO %^{Todo} %^G \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?"))
+  #+END_SRC
+- Books template
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'org-capture-templates '("b" "Books"
+                                          table-line
+                                          (file "books.org")
+                                          "| %^{Title} | %^{Author} | %^{Category} | %^L |"))
+  #+END_SRC
+- Journal template
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'org-capture-templates '("j" "Journal Entry"
+                                          entry
+                                          (file+datetree "journal.org")
+                                          "** %U %^{Title}\n%?"))
+  #+END_SRC
+- Project template
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'org-capture-templates '("p" "Project"
+                                          entry
+                                          (file "projects.org")
+                                          "* PROJECT %^{Title} %^G\n%?"))
+  #+END_SRC
+**** Keybindings
 Some basic keybindings
 #+BEGIN_SRC emacs-lisp
   (define-key global-map "\C-cl" 'org-store-link)
   (define-key global-map "\C-ca" 'org-agenda)
   (define-key global-map "\C-cc" 'org-capture)
+#+END_SRC
+Hitting =C-c C-x C-s= should mark my todo as done and move it to =archive.org=
+#+BEGIN_SRC emacs-lisp
+(define-key org-mode-map (kbd "C-c C-x C-s") 'done-and-dusted)
 #+END_SRC
 I want to open my index file using =C-c i=
 #+BEGIN_SRC emacs-lisp
@@ -535,6 +551,7 @@ After this I need to generate the template that has to be inserted
   "Generate the template for the note without the timestamp"
   (concat (format "#+TITLE: %s" note-name) "\n#+AUTHOR: Anirudh C\n" (format "\n* %s" note-name)))
 #+END_SRC
+Notes template
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'org-capture-templates '("n" "Notes"
                                        plain
