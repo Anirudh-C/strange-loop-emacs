@@ -543,6 +543,17 @@ After this I need to generate the template that has to be inserted
                                        "%(concat (generate-note-template) \"\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?\")"))
 #+END_SRC
 Now for org drill
+#+BEGIN_SRC emacs-lisp
+(use-package org-drill
+  :defer t
+  :ensure org-plus-contrib
+  :commands (org-drill)
+  :init (require 'cl)
+  :config
+  (setq org-drill-use-visible-cloze-face-p t)
+  (setq org-drill-hide-item-headings-p t)
+  )
+#+END_SRC
 *** Org Brain
 I use org brain for concept mapping
 #+BEGIN_SRC emacs-lisp
