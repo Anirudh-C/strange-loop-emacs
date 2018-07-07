@@ -246,15 +246,6 @@ git porcelain framework for me to us
 (use-package helm-projectile
   :ensure t)
 #+END_SRC
-Sometimes it is a pain to go to github to search for stuff
-#+BEGIN_SRC emacs-lisp
-(use-package magithub
-  :ensure t
-  :after magit
-  :config
-  (magithub-feature-autoinject t)
-  (setq magithub-clone-default-directory "~/github"))
-#+END_SRC
 I also don't need backup and autosave files because I use git
 #+BEGIN_SRC emacs-lisp
 (setq make-backup-files nil
@@ -374,10 +365,10 @@ I need to start adding text immediately when I start an org capture template (In
 **** Capture Templates
 - Todo template
   #+BEGIN_SRC emacs-lisp
-    (add-to-list 'org-capture-templates '("t" "Todo"
+    (setq org-capture-templates '(("t" "Todo"
                                           entry
                                           (file org-index-file)
-                                          "* TODO %^{Todo} %^G \nDEADLINE: %^{Deadline}t \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?"))
+                                          "* TODO %^{Todo} %^G \nDEADLINE: %^{Deadline}t \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")))
   #+END_SRC
 - Idea template
   #+BEGIN_SRC emacs-lisp
