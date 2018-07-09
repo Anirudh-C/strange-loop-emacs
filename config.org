@@ -686,11 +686,14 @@ Add the sub directories
 Get the emails
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-get-mail-command "mbsync -c ~/.emacs.d/.mbsyncrc uni"
+      mu4e-html2text-command 'mu4e-shr2text
       mu4e-update-interval 120
       mu4e-headers-auto-update t)
 #+END_SRC
 Set some general settings
 #+BEGIN_SRC emacs-lisp
+(setq mu4e-date-format-long "%Y-%m-%d %H:%M:%S")
+(setq mu4e-headers-date-format "%y%m%d %H:%M:%S")
 (setq mu4e-reply-to-address "anirudh.c@iiitb.org"
     user-mail-address "anirudh.c@iiitb.org"
     user-full-name  "Anirudh C")
@@ -719,6 +722,9 @@ Evil keybindings
   :ensure t)
 #+END_SRC
 Open mu4e when I press =C-c m=
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-c m") 'mu4e)
+#+END_SRC
 ** Hydra
 Create menus to hint at keybindings where keybindings are a pain
 #+BEGIN_SRC emacs-lisp

@@ -31,9 +31,13 @@
 (require 'mu4e-utils)
 
 (require 'cl)
-(require 'html2text)
 (require 'flow-fill)
 
+(defun html2text ()
+  "Replacement for standard html2text using shr."
+  (interactive)
+  (shr-render-region (point-min) (point-max))
+  (goto-char (point-min)))
 
 (defcustom mu4e-html2text-command
   (if (fboundp 'shr-insert-document) 'mu4e-shr2text 'html2text)
