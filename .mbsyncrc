@@ -1,0 +1,23 @@
+IMAPAccount uni
+Host outlook.office365.com
+User anirudh.c@iiitb.org
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.emacs.d/.mbsyncpass.gpg"
+Port 993
+SSLType IMAPS
+CertificateFile ~/.cert/outlook.cert.pem
+
+IMAPStore uni-remote
+Account uni
+
+MaildirStore uni-local
+Path ~/email/outlook
+Inbox ~/email/outlook/INBOX
+
+Channel uni
+Master :uni-remote:
+Slave :uni-local:
+Patterns "SENT" "INBOX" "DELETED"
+Create Slave
+Sync All
+Expunge Both
+SyncState *
