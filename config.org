@@ -246,15 +246,6 @@ git porcelain framework for me to us
 (use-package helm-projectile
   :ensure t)
 #+END_SRC
-Github in emacs
-#+BEGIN_SRC emacs-lisp
-(use-package magithub
-  :ensure t
-  :after magit
-  :config
-  (magithub-feature-autoinject t)
-  (setq magithub-clone-default-directory "~/github"))
-#+END_SRC
 I also don't need backup and autosave files because I use git
 #+BEGIN_SRC emacs-lisp
 (setq make-backup-files nil
