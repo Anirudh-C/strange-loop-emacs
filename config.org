@@ -251,6 +251,16 @@ I also don't need backup and autosave files because I use git
 (setq make-backup-files nil
       auto-save-default nil)
 #+END_SRC
+*** Dired
+#+BEGIN_SRC emacs-lisp
+(use-package ranger
+  :ensure t
+  :init (setq ranger-overrride-dired t))
+#+END_SRC
+Use ranger always
+#+BEGIN_SRC emacs-lisp
+(add-hook 'dired-mode-hook (lambda () (ranger-mode)))
+#+END_SRC
 ** Environments
 *** Markdown
 #+BEGIN_SRC emacs-lisp
