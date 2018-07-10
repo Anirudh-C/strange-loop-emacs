@@ -34,4 +34,6 @@ Emacs. Emacs will regenerate <kbd>config.el</kbd> and run it again.
   have that file Emacs will throw some angry text at you. Just remove the line that separates my custom options from the <kbd>config.org</kbd> file
   and Emacs will dump all of it in the <kbd>init.el</kbd> file.
 - There might be some compile-time *Warnings* when Emacs compiles these configurations for the first time. Let me know, if you know what they signify.
+- Also if you aren't using email with emacs please remove the email section in <kbd>config.org</kbd>. If you are setup email how you want to.
+  This is how I do it. Replicating my setup might take some additional effort
      
