@@ -599,6 +599,25 @@ Now for org drill
   (setq org-drill-hide-item-headings-p t)
   )
 #+END_SRC
+*** Habits
+Install org-habit
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'org-modules 'org-habit)
+(require 'org-habit)
+#+END_SRC
+Template for capturing habits
+#+BEGIN_SRC emacs-lisp
+;; Generate the scheduled timestamp
+(defun gen-habit-timestamp ()
+  (org-insert-time-stamp (org-read-date nil t) t nil nil nil " .+1d"))
+;; Generate the properties for the habit
+(defun gen-habit-props ()
+  '"\n:LOGBOOK:\n:END:\n:PROPERTIES:\n:STYLE: habit\n:END:\n")
+(add-to-list 'org-capture-templates '("h" "Habit"
+                                      entry
+                                      (file+headline org-index-file "Habits")
+                                      "** TODO %^{Title} \nSCHEDULED: %(gen-habit-timestamp) %(gen-habit-props) %?"))
+#+END_SRC
 *** Org Brain
 I use org brain for concept mapping
 #+BEGIN_SRC emacs-lisp
