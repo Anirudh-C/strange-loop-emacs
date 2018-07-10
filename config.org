@@ -251,16 +251,6 @@ I also don't need backup and autosave files because I use git
 (setq make-backup-files nil
       auto-save-default nil)
 #+END_SRC
-*** Dired
-#+BEGIN_SRC emacs-lisp
-(use-package ranger
-  :ensure t
-  :init (setq ranger-overrride-dired t))
-#+END_SRC
-Use ranger always
-#+BEGIN_SRC emacs-lisp
-(add-hook 'dired-mode-hook (lambda () (ranger-mode)))
-#+END_SRC
 ** Environments
 *** Markdown
 #+BEGIN_SRC emacs-lisp
@@ -306,6 +296,19 @@ I do some web development and hence I need some help there
 (use-package js2-mode
   :ensure t)
 #+END_SRC
+Setup impatient mode
+Dependencies:
+#+BEGIN_SRC emacs-lisp
+(use-package simple-httpd
+  :ensure t)
+(use-package htmlize
+  :ensure t)
+#+END_SRC
+Impatient Mode
+#+BEGIN_SRC emacs-lisp
+(use-package impatient-mode
+  :ensure t)
+#+END_SRC
 *** Clojure
 Install Clojure mode
 #+BEGIN_SRC emacs-lisp
@@ -315,6 +318,21 @@ Install Clojure mode
 Install CIDER
 #+BEGIN_SRC emacs-lisp
 (use-package cider
+  :ensure t)
+#+END_SRC
+*** PDF
+Install and configure pdf-tools
+#+BEGIN_SRC emacs-lisp
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-width))
+#+END_SRC
+*** Speed Typing
+Install emacs speed type
+#+BEGIN_SRC emacs-lisp
+(use-package speed-type
   :ensure t)
 #+END_SRC
 ** Org Mode
