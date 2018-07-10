@@ -686,6 +686,10 @@ Set the mail directory
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-maildir (expand-file-name "~/email/outlook"))
 #+END_SRC
+Make eww open links
+#+BEGIN_SRC emacs-lisp
+(setq browse-url-browser-function 'eww-browse-url)
+#+END_SRC
 Add the sub directories
 #+BEGIN_SRC emacs-lisp
 (setq mu4e-drafts-folder "/DRAFTS")
