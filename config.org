@@ -767,6 +767,11 @@ Sending Emails
       smtpmail-smtp-service 587
       smtpmail-debug-info t)
 #+END_SRC
+Change the default reply quote string
+#+BEGIN_SRC emacs-lisp
+(setq message-citation-line-format "In response to the mail by %f on %a %d %b %Y at %R:\n")
+(setq message-citation-line-function 'message-insert-formatted-citation-line)
+#+END_SRC
 Evil keybindings 
 #+BEGIN_SRC emacs-lisp
 (use-package evil-mu4e
