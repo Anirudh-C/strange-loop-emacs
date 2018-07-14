@@ -196,7 +196,12 @@ I also have some trusty plugins in vim, which I can use here
   (setq-default evil-escape-key-sequence "jk"))
 ;; I tend to do a lot of re-factoring wish I had more cursors
 (use-package multiple-cursors
-  :ensure t)
+  :ensure t
+  :config
+  (multiple-cursors-mode)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
 ;; In a large buffer I need to jump to a particular place easily  
 (use-package evil-easymotion
   :ensure t
