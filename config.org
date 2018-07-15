@@ -340,6 +340,74 @@ Install emacs speed type
 (use-package speed-type
   :ensure t)
 #+END_SRC
+** Email
+Install mu4e
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/mu4e")
+(require 'mu4e)
+#+END_SRC
+Set the mail directory
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-maildir (expand-file-name "~/email/outlook"))
+#+END_SRC
+Make eww open links
+#+BEGIN_SRC emacs-lisp
+(setq browse-url-browser-function 'eww-browse-url)
+#+END_SRC
+Add the sub directories
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-drafts-folder "/DRAFTS")
+(setq mu4e-sent-folder   "/SENT")
+(setq mu4e-trash-folder  "/DELETED")
+(setq message-signature-file "~/.emacs.d/.signature") ; put your signature in this file
+#+END_SRC
+Get the emails
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-get-mail-command "mbsync -c ~/.emacs.d/.mbsyncrc uni"
+      mu4e-html2text-command 'mu4e-shr2text
+      mu4e-update-interval 120
+      mu4e-headers-auto-update t)
+#+END_SRC
+Set some general settings
+#+BEGIN_SRC emacs-lisp
+(setq mu4e-date-format-long "%Y-%m-%d %H:%M:%S")
+(setq mu4e-headers-date-format "%y%m%d %H:%M:%S")
+(setq mu4e-reply-to-address "anirudh.c@iiitb.org"
+    user-mail-address "anirudh.c@iiitb.org"
+    user-full-name  "Anirudh C")
+
+;; Images
+(setq mu4e-show-images t)
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
+#+END_SRC
+Sending Emails
+#+BEGIN_SRC emacs-lisp
+(require 'smtpmail)
+
+; smtp
+(setq message-send-mail-function 'smtpmail-send-it
+      smtpmail-starttls-credentials
+      '(("smtp.office365.com" 587 nil nil))
+      smtpmail-default-smtp-server "smtp.office365.com"
+      smtpmail-smtp-server "smtp.office365.com"
+      smtpmail-smtp-service 587
+      smtpmail-debug-info t)
+#+END_SRC
+Change the default reply quote string
+#+BEGIN_SRC emacs-lisp
+(setq message-citation-line-format "In response to the mail by %f on %a %d %b %Y at %R:\n")
+(setq message-citation-line-function 'message-insert-formatted-citation-line)
+#+END_SRC
+Evil keybindings 
+#+BEGIN_SRC emacs-lisp
+(use-package evil-mu4e
+  :ensure t)
+#+END_SRC
+Open mu4e when I press =C-c m=
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-c m") 'mu4e)
+#+END_SRC
 ** Org Mode
 *** Display
 How I want org-mode to look
