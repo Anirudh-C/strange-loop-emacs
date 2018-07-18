@@ -127,7 +127,8 @@ Custom init functions
   "Initiate the theme given an optional frame argument"
   (load-theme 'doom-dracula t)
   (doom-themes-org-config)
-  (doom-modeline-init))
+  (doom-modeline-init)
+  (message "Welcome to Fiddler-Emacs"))
 
 (defun fiddler-reload-theme-in-daemon (frame)
   "Force the theme on the running frame (created via the daemon)"
