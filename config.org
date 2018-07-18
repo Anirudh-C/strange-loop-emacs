@@ -120,6 +120,30 @@ Dependencies
       :requires (shrink-path eldoc-eval)
       :hook (after-init . doom-modeline-init))
 #+END_SRC
+*** Daemon Colors Fix
+Custom init functions
+#+BEGIN_SRC emacs-lisp
+(defun fiddler-init-theme (&optional frame)
+  "Initiate the theme given an optional frame argument"
+  (load-theme 'doom-dracula t)
+  (doom-themes-org-config)
+  (doom-modeline-init))
+
+(defun fiddler-reload-theme-in-daemon (frame)
+  "Force the theme on the running frame (created via the daemon)"
+  (when (or (daemonp) (not (display-graphic-p)))
+    (with-selected-frame frame
+      (run-with-timer 0.1 nil #'fiddler-init-theme))))
+#+END_SRC
+Run functions after creating a new frame
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-make-frame-functions #'fiddler-init-theme)
+(add-hook 'after-make-frame-functions #'fiddler-reload-theme-in-daemon)
+#+END_SRC
+Initiate theme in GUI
+#+BEGIN_SRC emacs-lisp
+(fiddler-init-theme)
+#+END_SRC
 ** User Interface
 First I need to address the fact that I use Alt for my window manager.
 #+BEGIN_SRC emacs-lisp
