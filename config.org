@@ -207,8 +207,7 @@ I also have some trusty plugins in vim, which I can use here
 (use-package smartparens
   :ensure t
   :config
-  (require 'smartparens-config)
-  (smartparens-global-mode))
+  (require 'smartparens-config))
 ;; I press Esc a lot. Let's make that easy once and for all
 (use-package evil-escape
   :ensure t
