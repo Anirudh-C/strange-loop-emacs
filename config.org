@@ -778,10 +778,6 @@ Allow =babel= to evaluate emacs lisp, python, C, C++ and gnuplot code
    (C . t)
    (gnuplot . t)))
 #+END_SRC
-I want tabs in the code blocks to behave similar to the correspoding major mode
-#+BEGIN_SRC emacs-lisp
-(setq org-src-tab-acts-natively t)
-#+END_SRC
 Make =babel= evaluate code blocks without confirmation
 #+BEGIN_SRC emacs-lisp
 (setq org-confirm-babel-evaluate nil)
