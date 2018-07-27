@@ -177,8 +177,8 @@ Perform easy buffer navigation
 (require 'evil-states)
 (require 'evil-commands)
 ;; The actual mapping
-(define-key evil-normal-state-map (kbd "{") 'evil-next-buffer)
-(define-key evil-normal-state-map (kbd "}") 'evil-prev-buffer)
+(define-key evil-normal-state-map (kbd "}") 'evil-next-buffer)
+(define-key evil-normal-state-map (kbd "{") 'evil-prev-buffer)
 #+END_SRC
 I need to be able to use vim's composability for commands
 #+BEGIN_SRC emacs-lisp
