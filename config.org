@@ -792,6 +792,14 @@ Open the exported HTML files in FireFox
       browse-url-generic-program "firefox")
 (setenv "BROWSER" "firefox")
 #+END_SRC
+Make all code blocks syntax highlighted
+#+BEGIN_SRC emacs-lisp
+(setq org-latex-listings 'minted
+      org-latex-packages-alist '(("" "minted"))
+      org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+#+END_SRC
 *** Help
 I have a file on my orgfiles which is a document on the keybindings in org. I want to open it quickly.
 #+BEGIN_SRC emacs-lisp
