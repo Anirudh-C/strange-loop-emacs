@@ -728,63 +728,6 @@ Template for capturing habits
                                       (file+headline org-index-file "Habits")
                                       "** TODO %^{Title} \nSCHEDULED: %(gen-habit-timestamp) %(gen-habit-props) %?"))
 #+END_SRC
-*** Org Brain
-I use org brain for concept mapping
-#+BEGIN_SRC emacs-lisp
-(use-package org-brain
-  :ensure t
-  :init
-  (setq org-brain-path "~/brain")
-  :config
-  (setq org-id-track-globally t)
-  (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
-  (with-eval-after-load 'evil
-    (evil-set-initial-state 'org-brain-visualize-mode 'normal)))
-(global-set-key (kbd "C-;") 'org-brain-visualize)
-#+END_SRC
-I want to have a nice looking map
-#+BEGIN_SRC emacs-lisp
-(use-package ascii-art-to-unicode
-  :ensure t)
-
-;; Function to convert all ascii to unicode in the buffer
-(defun aa2u-buffer ()
-  (aa2u (point-min) (point-max)))
-;; Run the conversion after visualizing org-brain
-(add-hook 'org-brain-after-visualize-hook #'aa2u-buffer)
-#+END_SRC
-Convert org-brain to evil mode
-#+BEGIN_SRC emacs-lisp
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "p" 'org-brain-add-parent)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "P" 'org-brain-remove-parent)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "c" 'org-brain-add-child)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "C" 'org-brain-remove-child)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "h" 'org-brain-new-child)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "n" 'org-brain-pin)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "t" 'org-brain-set-title)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "j" 'forward-button)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "k" 'backward-button)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "o" 'org-brain-goto-current)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "O" 'org-brain-goto)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "v" 'org-brain-visualize)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "f" 'org-brain-add-friendship)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "F" 'org-brain-remove-friendship)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "d" 'org-brain-delete-entry)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "l" 'org-brain-add-resource)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "a" 'org-brain-visualize-attach)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "A" 'org-brain-archive)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "b" 'org-brain-visualize-back)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "\C-y" 'org-brain-visualize-paste-resource)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "T" 'org-brain-set-tags)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "q" 'org-brain-visualize-quit)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "r" 'org-brain-visualize-random)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "R" 'org-brain-visualize-wander)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "m" 'org-brain-visualize-mind-map)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "+" 'org-brain-visualize-add-grandchild)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "-" 'org-brain-visualize-remove-grandchild)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "z" 'org-brain-visualize-add-grandparent)
-(evil-leader/set-key-for-mode 'org-brain-visualize-mode "Z" 'org-brain-visualize-remove-grandparent)
-#+END_SRC
 *** Export
 Allow =babel= to evaluate emacs lisp, python, C, C++ and gnuplot code
 #+BEGIN_SRC emacs-lisp
