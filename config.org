@@ -728,7 +728,7 @@ Template for capturing habits
   (org-insert-time-stamp (org-read-date nil t) t nil nil nil " .+1d"))
 ;; Generate the properties for the habit
 (defun gen-habit-props ()
-  '"\n:LOGBOOK:\n:END:\n:PROPERTIES:\n:STYLE: habit\n:END:\n")
+  '"\n:PROPERTIES:\n:LOGGING: DONE(@) logrepeat\n:STYLE: habit\n:END:\n")
 (add-to-list 'org-capture-templates '("h" "Habit"
                                       entry
                                       (file+headline org-index-file "Habits")
