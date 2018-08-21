@@ -164,6 +164,12 @@ Make a sratch buffer from thin air
   (switch-to-buffer (make-temp-name "scratch-")))
 (global-set-key (kbd "C-s") 'gen-scratch)
 #+END_SRC
+Enable buffer narrowing
+#+BEGIN_SRC emacs-lisp
+  (put 'narrow-to-defun 'disabled nil)
+  (put 'narrow-to-page 'disabled nil)
+  (put 'narrow-to-region 'disabled nil)
+#+END_SRC
 Renaming files becomes easier
 #+BEGIN_SRC emacs-lisp
 (defun rename-file-and-buffer (new-name)
