@@ -172,7 +172,7 @@ Enable buffer narrowing
 #+END_SRC
 Renaming files becomes easier
 #+BEGIN_SRC emacs-lisp
-(defun rename-file-and-buffer (new-name)
+(defun fiddler/rename-file-and-buffer (new-name)
   "Renames both current buffer and file it's visiting to NEW-NAME."
   (interactive "FNew name: ")
   (let ((name (buffer-name))
