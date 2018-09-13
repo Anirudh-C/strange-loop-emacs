@@ -277,6 +277,7 @@ But the default buffer management system using =(list-buffers)= is horrendous, s
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 #+END_SRC
 *** Projects
+**** Git
 I use git to manage my projects and I need emacs to integrate a
 git porcelain framework for me to us
 #+BEGIN_SRC emacs-lisp
@@ -298,6 +299,12 @@ I also don't need backup and autosave files because I use git
 #+BEGIN_SRC emacs-lisp
 (setq make-backup-files nil
       auto-save-default nil)
+#+END_SRC
+**** Make a New Project
+#+BEGIN_SRC emacs-lisp
+  (defun make-project ()
+    (interactive)
+    (magit-status (read-directory-name "Directory:")))
 #+END_SRC
 ** Environments
 *** Markdown
