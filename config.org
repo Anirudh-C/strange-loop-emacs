@@ -146,10 +146,6 @@ Initiate theme in GUI
 (fiddler-init-theme)
 #+END_SRC
 ** User Interface
-First I need to address the fact that I use Alt for my window manager.
-#+BEGIN_SRC emacs-lisp
-(setq x-super-keysym 'meta)
-#+END_SRC
 Also I need to be able to edit my config in emacs and restart emacs
 in emacs
 #+BEGIN_SRC emacs-lisp
