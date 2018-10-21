@@ -11,4 +11,5 @@ network-security.data
 url/
 speed-type/
 .mc-lists.el
+tramp
 nov-places

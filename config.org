@@ -183,6 +183,18 @@ Renaming files becomes easier
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
 #+END_SRC
+Edit a file in sudo on the fly
+#+BEGIN_SRC emacs-lisp
+  (defun fiddler/find-file-sudo ()
+    "Find file as root if necessary."
+    (interactive)
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name)))
+#+END_SRC
+Binding for buffer sequential navigation
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-l") 'next-buffer)
+  (global-set-key (kbd "C-x C-h") 'next-buffer)
+#+END_SRC
 *** Evil
 I need vim within emacs to edit text efficiently
 #+BEGIN_SRC emacs-lisp
@@ -190,15 +202,6 @@ I need vim within emacs to edit text efficiently
   :ensure t
   :config (evil-mode))
 #+END_SRC 
-Perform easy buffer navigation
-#+BEGIN_SRC emacs-lisp
-;; This needs to be loaded before the buffer navigation mapping.
-(require 'evil-states)
-(require 'evil-commands)
-;; The actual mapping
-(define-key evil-normal-state-map (kbd "}") 'evil-next-buffer)
-(define-key evil-normal-state-map (kbd "{") 'evil-prev-buffer)
-#+END_SRC
 I need to be able to use vim's composability for commands
 #+BEGIN_SRC emacs-lisp
 (use-package evil-leader
