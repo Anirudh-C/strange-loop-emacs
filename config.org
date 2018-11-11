@@ -146,6 +146,15 @@ Initiate theme in GUI
 (fiddler/init-theme)
 #+END_SRC
 ** User Interface
+i3 uses Alt as a modifier
+#+BEGIN_SRC emacs-lisp
+(setq x-super-keysym 'meta)
+#+END_SRC
+Would be fun to try out packages
+#+BEGIN_SRC emacs-lisp
+  (use-package try
+    :ensure t)
+#+END_SRC
 Also I need to be able to edit my config in emacs and restart emacs
 in emacs
 #+BEGIN_SRC emacs-lisp
@@ -409,6 +418,15 @@ Utility function to eval at startup to start EXWM when necessary
     (require 'exwm-config)
     (exwm-config-default))
 #+END_SRC
+*** Rails
+Projectile can provide support
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile-rails
+    :ensure t
+    :config
+    (projectile-rails-global-mode)
+    (setq projectile-rails-keymap-prefix (kbd "C-c p C-r")))
+#+END_SRC
 ** Email
 Install mu4e
 #+BEGIN_SRC emacs-lisp
@@ -487,6 +505,26 @@ How I want org-mode to look
 (setq org-hide-leading-stars t org-startup-indented t)
 ;; Use the nice down arrow to display folded content in org headlines
 (setq org-ellipsis "⤵")
+#+END_SRC
+Org Bullets need to look good
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+Evil Keybindings
+#+BEGIN_SRC emacs-lisp
+(use-package evil-org
+  :ensure t
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+            (lambda ()
+              (evil-org-set-key-theme)))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 #+END_SRC
 *** Tasks and Org-Capture
 **** Basic Setup
