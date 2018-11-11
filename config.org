@@ -88,10 +88,10 @@ I also want emacs to tell me which column I am in the buffer
 #+END_SRC
 I don't like trailing whitespaces as it messes so many things up
 #+BEGIN_SRC emacs-lisp
-(defun my/buf-show-trailing-whitespace ()
+(defun fiddler/buf-show-trailing-whitespace ()
   (interactive)
     (setq show-trailing-whitespace t))
-(add-hook 'prog-mode-hook 'my/buf-show-trailing-whitespace)
+(add-hook 'prog-mode-hook 'fiddler/buf-show-trailing-whitespace)
 #+END_SRC 
 Now for the major cosmetic changes. Set doom-dracula theme
 #+BEGIN_SRC emacs-lisp
@@ -123,27 +123,27 @@ Dependencies
 *** Daemon Colors Fix
 Custom init functions
 #+BEGIN_SRC emacs-lisp
-(defun fiddler-init-theme (&optional frame)
+(defun fiddler/init-theme (&optional frame)
   "Initiate the theme given an optional frame argument"
   (load-theme 'doom-dracula t)
   (doom-themes-org-config)
   (doom-modeline-init)
   (message "Welcome to Fiddler-Emacs"))
 
-(defun fiddler-reload-theme-in-daemon (frame)
+(defun fiddler/reload-theme-in-daemon (frame)
   "Force the theme on the running frame (created via the daemon)"
   (when (or (daemonp) (not (display-graphic-p)))
     (with-selected-frame frame
-      (run-with-timer 0.1 nil #'fiddler-init-theme))))
+      (run-with-timer 0.1 nil #'fiddler/init-theme))))
 #+END_SRC
 Run functions after creating a new frame
 #+BEGIN_SRC emacs-lisp
-(add-hook 'after-make-frame-functions #'fiddler-init-theme)
-(add-hook 'after-make-frame-functions #'fiddler-reload-theme-in-daemon)
+(add-hook 'after-make-frame-functions #'fiddler/init-theme)
+(add-hook 'after-make-frame-functions #'fiddler/reload-theme-in-daemon)
 #+END_SRC
 Initiate theme in GUI
 #+BEGIN_SRC emacs-lisp
-(fiddler-init-theme)
+(fiddler/init-theme)
 #+END_SRC
 ** User Interface
 Also I need to be able to edit my config in emacs and restart emacs
@@ -154,11 +154,11 @@ in emacs
 #+END_SRC
 Make a sratch buffer from thin air
 #+BEGIN_SRC emacs-lisp
-(defun gen-scratch ()
+(defun fiddler/gen-scratch ()
   "Create and switch to a temporary scratch buffer with a random name."
   (interactive)
   (switch-to-buffer (make-temp-name "scratch-")))
-(global-set-key (kbd "C-s") 'gen-scratch)
+(global-set-key (kbd "C-s") 'fiddler/gen-scratch)
 #+END_SRC
 Enable buffer narrowing
 #+BEGIN_SRC emacs-lisp
@@ -301,7 +301,7 @@ I also don't need backup and autosave files because I use git
 #+END_SRC
 **** Make a New Project
 #+BEGIN_SRC emacs-lisp
-  (defun make-project ()
+  (defun fiddler/make-project ()
     (interactive)
     (magit-status (read-directory-name "Directory:")))
 #+END_SRC
@@ -585,30 +585,30 @@ Hitting =C-c C-x C-s= should mark my todo as done and move it to =archive.org=
 #+END_SRC
 I want to open my index file using =C-c i=
 #+BEGIN_SRC emacs-lisp
-(defun open-index ()
+(defun fiddler/open-index ()
   "Open the master org TODO list."
   (interactive)
   (find-file org-index-file)
   (end-of-buffer))
-(global-set-key (kbd "C-c i") 'open-index)
+(global-set-key (kbd "C-c i") 'fiddler/open-index)
 #+END_SRC
 I want to open the books database using =C-c b=
 #+BEGIN_SRC emacs-lisp
-(defun open-book ()
+(defun fiddler/open-book ()
   "Open the books database."
   (interactive)
   (find-file "~/org/books.org")
   (end-of-buffer))
-(global-set-key (kbd "C-c b") 'open-book)
+(global-set-key (kbd "C-c b") 'fiddler/open-book)
 #+END_SRC
 I want to open my journal using =C-c j=
 #+BEGIN_SRC emacs-lisp
-(defun open-journal ()
+(defun fiddler/open-journal ()
   "Open the master org TODO list."
   (interactive)
   (find-file "~/org/journal.org")
   (end-of-buffer))
-(global-set-key (kbd "C-c j") 'open-journal)
+(global-set-key (kbd "C-c j") 'fiddler/open-journal)
 #+END_SRC
 Org Agenda has extremely confusing keybindings
 #+BEGIN_SRC emacs-lisp
@@ -714,14 +714,14 @@ Active when in Emacs' `calendar-mode'."
 I want to be able to learn from my notes, that is, I want to Emacs to drill my notes so that I can learn
 First I need to setup a method to generate the note filename on the fly.
 #+BEGIN_SRC emacs-lisp
-(defun generate-note ()
+(defun fiddler/generate-note ()
   "Generate a note in the notes directory"
   (setq note-name (read-string "File: "))
   (expand-file-name (format "%s.org" note-name) "~/org/notes/"))
 #+END_SRC
 After this I need to generate the template that has to be inserted
 #+BEGIN_SRC emacs-lisp
-(defun generate-note-template ()
+(defun fiddler/generate-note-template ()
   "Generate the template for the note without the timestamp"
   (concat (format "#+TITLE: %s" note-name) "\n#+AUTHOR: Anirudh C\n" (format "\n* %s" note-name)))
 #+END_SRC
@@ -729,9 +729,9 @@ Notes template
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'org-capture-templates '("n" "Notes"
                                        plain
-                                       (file generate-note)
+                                       (file fiddler/generate-note)
                                        ;; Add timestamp
-                                       "%(concat (generate-note-template) \"\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?\")"))
+                                       "%(concat (fiddler/generate-note-template) \"\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?\")"))
 #+END_SRC
 Now for org drill
 #+BEGIN_SRC emacs-lisp
@@ -754,15 +754,15 @@ Install org-habit
 Template for capturing habits
 #+BEGIN_SRC emacs-lisp
 ;; Generate the scheduled timestamp
-(defun gen-habit-timestamp ()
+(defun fiddler/gen-habit-timestamp ()
   (org-insert-time-stamp (org-read-date nil t) t nil nil nil " .+1d"))
 ;; Generate the properties for the habit
-(defun gen-habit-props ()
+(defun fiddler/gen-habit-props ()
   '"\n:PROPERTIES:\n:LOGGING: DONE(!) logrepeat\n:STYLE: habit\n:END:\n")
 (add-to-list 'org-capture-templates '("h" "Habit"
                                       entry
                                       (file+headline org-index-file "Habits")
-                                      "** TODO %^{Title} \nSCHEDULED: %(gen-habit-timestamp) %(gen-habit-props) %?"))
+                                      "** TODO %^{Title} \nSCHEDULED: %(fiddler/gen-habit-timestamp) %(fiddler/gen-habit-props) %?"))
 #+END_SRC
 *** Export
 Allow =babel= to evaluate emacs lisp, python, C, C++ and gnuplot code
@@ -799,12 +799,12 @@ Make all code blocks syntax highlighted
 *** Help
 I have a file on my orgfiles which is a document on the keybindings in org. I want to open it quickly.
 #+BEGIN_SRC emacs-lisp
-(defun open-org-help ()
+(defun fiddler/open-org-help ()
   "Open my org mode help file"
   (interactive)
   (find-file "~/org/org-cheat-sheet.org")
   (end-of-buffer))
-(global-set-key (kbd "C-c h") 'open-org-help)
+(global-set-key (kbd "C-c h") 'fiddler/open-org-help)
 #+END_SRC
 ** Hydra
 Create menus to hint at keybindings where keybindings are a pain
@@ -892,19 +892,18 @@ Make all prompts y or n instead of yes or no
 #+END_SRC
 Open my config quickly
 #+BEGIN_SRC emacs-lisp
-(defun open-config ()
+(defun fiddler/open-config ()
   "Open the config file"
   (interactive)
   (find-file "~/.emacs.d/config.org")
   (end-of-buffer))
-(global-set-key (kbd "C-c e") 'open-config)
+(global-set-key (kbd "C-c e") 'fiddler/open-config)
 #+END_SRC
 Refresh the configuration inplace without restarting emacs
 #+BEGIN_SRC emacs-lisp
-(defun reload-config ()
+(defun fiddler/reload-config ()
   "Reload config on the fly without restarting emacs"
   (interactive)
   (load-file "~/.emacs.d/init.el")
   (message "Reloaded Config"))
-(global-set-key (kbd "C-c r") 'reload-config)
 #+END_SRC
