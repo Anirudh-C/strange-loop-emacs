@@ -526,6 +526,10 @@ Evil Keybindings
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 #+END_SRC
+The emphasis markers in org mode aren't the *best*
+#+BEGIN_SRC emacs-lisp
+(setq org-hide-emphasis-markers t)
+#+END_SRC
 *** Tasks and Org-Capture
 **** Basic Setup
 I have all my org files in a directory =~/org/= and I also have an index file which has all my TODOs in an outline and
