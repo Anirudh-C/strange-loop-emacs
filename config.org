@@ -46,6 +46,10 @@ I don't like the default startup area message
 (defun display-startup-echo-area-message ()
   (message "Welcome to Fiddler-Emacs"))
 #+END_SRC
+Show line numbers
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'find-file-hook 'linum-mode)
+#+END_SRC
 *** Theme
 I need emacs to look exactly like I want it to, so
 start by removing the default startup buffer
@@ -62,7 +66,7 @@ Also remove the scrollbar, menubar and toolbar
   (scroll-bar-mode -1))
 #+END_SRC 
 When I use emacs I deal with a lot of parentheses, I want emacs
-to match them for me and do it colourfully
+to match them for me and do it colourfully using =rainbow-delimiters=
 #+BEGIN_SRC emacs-lisp
 (show-paren-mode 1)
 (use-package rainbow-delimiters
@@ -93,7 +97,7 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
 (add-hook 'prog-mode-hook 'fiddler/buf-show-trailing-whitespace)
 #+END_SRC 
-Now for the major cosmetic changes. Set doom-dracula theme
+Now for the major cosmetic changes. Use =doom-themes= and ~doom-dracula~
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes
   :ensure t
@@ -104,7 +108,7 @@ Now for the major cosmetic changes. Set doom-dracula theme
   (doom-themes-org-config))
 #+END_SRC
 *** Modeline
-Dependencies
+Dependencies (=shrink-path=, =all-the-icons= and =eldoc-eval=)
 #+BEGIN_SRC emacs-lisp
 (use-package shrink-path
              :ensure t)
@@ -113,6 +117,7 @@ Dependencies
 (use-package eldoc-eval
              :ensure t)
 #+END_SRC
+Install =doom-modeline=
 #+BEGIN_SRC emacs-lisp
 (use-package doom-modeline
       :ensure t
@@ -150,12 +155,12 @@ i3 uses Alt as a modifier
 #+BEGIN_SRC emacs-lisp
 (setq x-super-keysym 'meta)
 #+END_SRC
-Would be fun to try out packages
+Would be fun to =try= out packages
 #+BEGIN_SRC emacs-lisp
   (use-package try
     :ensure t)
 #+END_SRC
-Also I need to be able to edit my config in emacs and restart emacs
+Also I need to be able to edit my config in emacs and =restart-emacs=
 in emacs
 #+BEGIN_SRC emacs-lisp
 (use-package restart-emacs
@@ -167,7 +172,6 @@ Make a sratch buffer from thin air
   "Create and switch to a temporary scratch buffer with a random name."
   (interactive)
   (switch-to-buffer (make-temp-name "scratch-")))
-(global-set-key (kbd "C-s") 'fiddler/gen-scratch)
 #+END_SRC
 Enable buffer narrowing
 #+BEGIN_SRC emacs-lisp
@@ -204,104 +208,32 @@ Binding for buffer sequential navigation
   (global-set-key (kbd "C-x C-l") 'next-buffer)
   (global-set-key (kbd "C-x C-h") 'next-buffer)
 #+END_SRC
-*** Evil
-I need vim within emacs to edit text efficiently
+Undoing and redoing using =undo-tree= only
 #+BEGIN_SRC emacs-lisp
-(use-package evil
-  :ensure t
-  :config (evil-mode))
-#+END_SRC 
-I need to be able to use vim's composability for commands
-#+BEGIN_SRC emacs-lisp
-(use-package evil-leader
-  :ensure t
-  :config
-  ;; Load evil mode everywhere
-  (global-evil-leader-mode)
-  ;; Set the default leader key to , instead of \.
-  (evil-leader/set-leader ","))
+  (use-package undo-tree
+    :ensure t
+    :config
+    (undo-tree-mode))
 #+END_SRC
-I also have some trusty plugins in vim, which I can use here
+Make redo the redo of undo-tree
 #+BEGIN_SRC emacs-lisp
-;; I want to comment stuff easily
-(use-package evil-nerd-commenter
-  :ensure t
-  :config
-  ;; Setup the default hotkeys for me
-  (evilnc-default-hotkeys))
-;; I want to be able to delete limiters with vim text object like
-;; motions
-(use-package evil-surround
-  :ensure t
-  :config (global-evil-surround-mode 1))
-;; I also need emacs to complete my parentheses as and when I want
-(use-package smartparens
-  :ensure t
-  :config
-  (require 'smartparens-config))
-;; I press Esc a lot. Let's make that easy once and for all
-(use-package evil-escape
-  :ensure t
-  :config
-  (evil-escape-mode)
-  (setq-default evil-escape-key-sequence "jk"))
-;; I tend to do a lot of re-factoring wish I had more cursors
-(use-package multiple-cursors
-  :ensure t
-  :config
-  (multiple-cursors-mode)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
-;; In a large buffer I need to jump to a particular place easily  
-(use-package evil-easymotion
-  :ensure t
-  :config
-  (evilem-default-keybindings "SPC"))
-#+END_SRC
-*** Helm
-While using emacs I tend to view a lot off lists.
-Wish I could fuzzy search all of them and narrow them down
-#+BEGIN_SRC emacs-lisp
-(use-package helm
-  :ensure t
-  ;; Change normal M-x to helm's M-x
-  :bind (("M-x" . helm-M-x))
-  :config
-  ;; Start helm-mode always
-  (helm-mode 1)
-  ;; Do fuzzy matching as and when possible
-  (setq helm-mode-fuzzy-match t)
-  (setq helm-completion-in-region-fuzzy-match t)
-  ;; Aid the fuzzy matching by reducing the number of candidates
-  (setq helm-candidate-number-limit 40)
-  ;; Resize the helm buffer to make the overall experience neat.
-  (setq helm-autoresize-mode t))
-#+END_SRC
-I tend not to use splits or tabs because there is so much you can do with just buffers. 
-But the default buffer management system using =(list-buffers)= is horrendous, so I use helm there
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-x C-b") 'helm-mini)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(defalias 'redo 'undo-tree-redo)
 #+END_SRC
 *** Projects
 **** Git
-I use git to manage my projects and I need emacs to integrate a
-git porcelain framework for me to us
+I use git to manage my projects and =magit= provides the interface
+and =projectile= is for project specific functionality
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-  :ensure t)
-(global-set-key (kbd "C-x g") 'magit)
-;; I want to use vim bindings here as well
-(use-package evil-magit
-  :ensure t)
-;; I need to search for files in a project
-(use-package projectile
-  :ensure t
-  :config (projectile-mode))
-;; I need helm to work here as well  
-(use-package helm-projectile
-  :ensure t)
+  (use-package magit
+    :ensure t)
+  (global-set-key (kbd "C-x g") 'magit)
+  ;; I need to search for files in a project
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-mode)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (setq projectile-completion-system 'ivy))
 #+END_SRC
 I also don't need backup and autosave files because I use git
 #+BEGIN_SRC emacs-lisp
@@ -314,8 +246,104 @@ I also don't need backup and autosave files because I use git
     (interactive)
     (magit-status (read-directory-name "Directory:")))
 #+END_SRC
+*** Completion
+Use =ivy= for completion
+#+BEGIN_SRC emacs-lisp
+(use-package ivy 
+  :ensure t
+  :diminish (ivy-mode . "")
+  :config
+  (ivy-mode 1)
+  ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
+  (setq ivy-use-virtual-buffers t)
+  ;; number of result lines to display
+  (setq ivy-height 10)
+  ;; does not count candidates
+  (setq ivy-count-format "")
+  ;; no regexp by default
+  (setq ivy-initial-inputs-alist nil)
+  ;; configure regexp engine.
+  (setq ivy-re-builders-alist
+	;; allow input not in order
+        '((t   . ivy--regex-ignore-order))))
+#+END_SRC
+Ensure fuzzy search happens using =flx=
+#+BEGIN_SRC emacs-lisp
+  (use-package flx
+    :ensure t)
+#+END_SRC
+Setup =counsel= for additional completion
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :after ivy
+    :ensure t
+    :config
+    (counsel-mode)
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (global-set-key (kbd "C-x s") 'counsel-git-grep))
+#+END_SRC
+Make the buffer listing more complete using =ivy-rich=
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy-rich
+    :ensure t
+    :after ivy
+    :config
+    (ivy-rich-mode))
+#+END_SRC
+Setup =swiper= for search
+#+BEGIN_SRC emacs-lisp
+  (use-package swiper
+    :ensure t
+    :after ivy
+    :bind (("C-s" . swiper)
+           ("C-r" . swiper)))
+#+END_SRC
+*** Ranger
+Use =ranger= like behaviour in dired
+#+BEGIN_SRC emacs-lisp
+  (use-package ranger
+    :ensure t
+    :config
+    (ranger-override-dired-mode t))
+#+END_SRC
+*** Multiple Cursors
+Use =multiple-cursors= behaviour
+#+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :config
+    (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+    (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+#+END_SRC
+*** Easy Killing
+Use =easy-kill= instead of =kill-ring-save=
+#+BEGIN_SRC emacs-lisp
+  (use-package easy-kill
+    :ensure t
+    :config
+    (global-set-key [remap kill-ring-save] 'easy-kill)
+    (global-set-key [remap mark-sexp] 'easy-mark))
+#+END_SRC
+Browse the kill-ring easily using =browse-kill-ring=
+#+BEGIN_SRC emacs-lisp
+  (use-package browse-kill-ring
+    :ensure t)
+#+END_SRC
+*** Window Management
+Use =ace-window= to manage windows
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-window
+    :ensure t
+    :config
+    (global-set-key (kbd "M-o") 'ace-window)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    (setq aw-background nil))
+#+END_SRC
 ** Environments
 *** Markdown
+Highlighting using =markdown-mode=
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
   :ensure t
@@ -328,7 +356,7 @@ I also don't need backup and autosave files because I use git
   :init (setq markdown-command "multimarkdown"))
 #+END_SRC
 *** Web
-I do some web development and hence I need some help there
+Install some dependencies (=rainbow-mode= for colors, =css-mode= for css highlighting)
 #+BEGIN_SRC emacs-lisp
 ;; Understand css
 (use-package rainbow-mode
@@ -339,52 +367,147 @@ I do some web development and hence I need some help there
   ;; hook to get colors in css
   (add-hook 'css-mode-hook (lambda ()
 (rainbow-mode))))
-;; Improve HTML and CSS workflow
-(use-package emmet-mode
-  :ensure t
-  :commands emmet-mode)
-;; HTML template editing  
-(use-package web-mode
-  :ensure t
-  :defer t
-  :config
-  ;; Indent all my web mode code by 2 instead of 4
-  (setq web-mode-attr-indent-offset 2)
-  (setq web-mode-code-indent-offset 2)
-  (setq web-mode-css-indent-offset 2)
-  (setq web-mode-indent-style 2)
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-sql-indent-offset 2))
-;; Some JS help
-(use-package js2-mode
-  :ensure t)
 #+END_SRC
-Setup impatient mode
-Dependencies:
+Install =web-mode= and =emmet-mode=
+#+BEGIN_SRC emacs-lisp
+  (use-package emmet-mode
+    :ensure t
+    :commands emmet-mode)
+
+  (use-package web-mode
+    :ensure t
+    :defer t
+    :config
+    ;; Indent all my web mode code by 2 instead of 4
+    (setq web-mode-attr-indent-offset 2)
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-css-indent-offset 2)
+    (setq web-mode-indent-style 2)
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-sql-indent-offset 2)
+    ;; Highlight columns
+    (setq web-mode-enable-current-column-highlight t)
+    (setq web-mode-enable-current-element-highlight t))
+#+END_SRC
+Load =web-mode= in the specific files
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
+#+END_SRC
+Add completion vocabulary to css and html when in =web-mode=
+#+BEGIN_SRC emacs-lisp
+  (use-package company-web
+    :ensure t
+    :after company
+    :config
+    (add-hook 'web-mode-hook (lambda ()
+                               (set (make-local-variable 'company-backends) '(company-css company-web-html company-files)))))
+#+END_SRC
+Enable =emmet-mode= in =web-mode=
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'web-mode-hook 'emmet-mode)
+#+END_SRC
+For =emmet-mode= to switch between html and css in the same document
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'web-mode-before-auto-complete-hooks
+            '(lambda ()
+               (let ((web-mode-cur-lang
+                      (web-mode-language-at-pos)))
+                 (if (string= web-mode-cur-lang "css")
+                     (setq emmet-use-css-transform t)
+                   (setq emmet-use-css-transform nil)))))
+#+END_SRC
+Setup =impatient-mode=
+Dependencies (=simple-httpd= to start http server and =htmlize= for additional functionality)
 #+BEGIN_SRC emacs-lisp
 (use-package simple-httpd
   :ensure t)
 (use-package htmlize
   :ensure t)
 #+END_SRC
-Impatient Mode
+=impatient-mode=
 #+BEGIN_SRC emacs-lisp
 (use-package impatient-mode
   :ensure t)
 #+END_SRC
+**** Javascript
+#+BEGIN_SRC emacs-lisp
+(use-package js2-mode
+  :ensure t)
+#+END_SRC
+Use =indium= in =js2-mode=
+#+BEGIN_SRC emacs-lisp
+  (use-package indium
+    :ensure t
+    :config
+    (eval-when-compile
+  (add-hook 'js-mode-hook #'indium-interaction-mode)))
+#+END_SRC
+Refactoring in =js2-mode=
+#+BEGIN_SRC emacs-lisp
+  (use-package js2-refactor
+    :ensure t
+    :defer t
+    :config
+    (add-hook 'js2-mode-hook #'js2-refactor-mode)
+    (add-hook 'js-mode #'js2-refactor-mode)
+  (js2r-add-keybindings-with-prefix "C-c C-m"))
+#+END_SRC
+Edit =json= nicely
+#+BEGIN_SRC emacs-lisp
+  (use-package json-mode
+    :ensure t
+    :defer t
+    :config
+  (setq js-indent-level 2))
+#+END_SRC
+=JSX= and =React=
+#+BEGIN_SRC emacs-lisp
+  (use-package rjsx-mode
+    :ensure t
+    :defer t
+    :config
+    (defun emmet/rjsx-mode-hook ()
+      (setq-default emmet-expand-jsx-className? t)
+      (emmet-mode))
+    (add-hook 'rjsx-mode-hook 'emmet/rjsx-mode-hook)
+  (setq-default rjsx-indent-level 2))
+#+END_SRC
+=elm-mode=
+#+BEGIN_SRC emacs-lisp
+(use-package elm-mode
+  :ensure t
+  :defer t
+  :config
+  (add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
+  (defun company/elm-mode-hook ()
+    (add-to-list 'company-backends 'company-elm))
+  (add-hook 'elm-mode-hook 'company/elm-mode-hook)
+(custom-set-variables '(elm-format-on-save t)))
+#+END_SRC
+**** Rails
+=projectile-rails= can help find files rails understands
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile-rails
+    :ensure t
+    :config
+    (projectile-rails-global-mode)
+    (setq projectile-rails-keymap-prefix (kbd "C-c p C-r")))
+#+END_SRC
 *** Clojure
-Install Clojure mode
+Install =clojure-mode=
 #+BEGIN_SRC emacs-lisp
 (use-package clojure-mode
   :ensure t)
 #+END_SRC
-Install CIDER
+Install =cider= for REPL interaction
 #+BEGIN_SRC emacs-lisp
 (use-package cider
   :ensure t)
 #+END_SRC
 *** PDF
-Install and configure pdf-tools
+Install and configure =pdf-tools=
 #+BEGIN_SRC emacs-lisp
 (use-package pdf-tools
   :ensure t
@@ -393,13 +516,13 @@ Install and configure pdf-tools
   (setq-default pdf-view-display-size 'fit-width))
 #+END_SRC
 *** Speed Typing
-Install emacs speed type
+Install =speed-type= to practice touch typing
 #+BEGIN_SRC emacs-lisp
 (use-package speed-type
   :ensure t)
 #+END_SRC
 *** Ebooks
-Use ~nov.el~
+Use =nov.el= to open ebooks
 #+BEGIN_SRC emacs-lisp
   (use-package nov
     :ensure t
@@ -407,6 +530,7 @@ Use ~nov.el~
     (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 #+END_SRC
 *** EXWM
+X window management using =exwm=
 #+BEGIN_SRC emacs-lisp
   (use-package exwm
     :ensure t)
@@ -418,17 +542,43 @@ Utility function to eval at startup to start EXWM when necessary
     (require 'exwm-config)
     (exwm-config-default))
 #+END_SRC
-*** Rails
-Projectile can provide support
+*** Python
+Run the following =pip= install first
+#+BEGIN_SRC sh
+pip install --user jedi flake8 autopep8 yapf
+#+END_SRC
+Install =elpy=
 #+BEGIN_SRC emacs-lisp
-  (use-package projectile-rails
+  (use-package elpy
     :ensure t
     :config
-    (projectile-rails-global-mode)
-    (setq projectile-rails-keymap-prefix (kbd "C-c p C-r")))
+    (elpy-enable))
+#+END_SRC
+*** Lisp
+Use =smartparens=
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :config
+    (require 'smartparens-config))
+#+END_SRC
+*** Drawing
+Install =artist-mode=
+#+BEGIN_SRC emacs-lisp
+  (require 'artist)
+#+END_SRC
+*** Pocket-reader
+Use =pocket-reader.el= to read your pocket in emacs
+#+BEGIN_SRC emacs-lisp
+  (use-package pocket-reader
+    :ensure t
+    :config
+    (add-hook 'pocket-reader-mode-hook (lambda ()
+                                         "Disable line numbers in pocket reader"
+                                         (line-number-mode -1))))
 #+END_SRC
 ** Email
-Install mu4e
+Install =mu4e=
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/mu4e")
 (require 'mu4e)
@@ -468,7 +618,7 @@ Set some general settings
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
 #+END_SRC
-Sending Emails
+Sending Emails using =smtpmail= (SMTP)
 #+BEGIN_SRC emacs-lisp
 (require 'smtpmail)
 
@@ -486,11 +636,6 @@ Change the default reply quote string
 (setq message-citation-line-format "In response to the mail by %f on %a %d %b %Y at %R:\n")
 (setq message-citation-line-function 'message-insert-formatted-citation-line)
 #+END_SRC
-Evil keybindings 
-#+BEGIN_SRC emacs-lisp
-(use-package evil-mu4e
-  :ensure t)
-#+END_SRC
 Open mu4e when I press =C-c m=
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c m") 'mu4e)
@@ -506,25 +651,12 @@ How I want org-mode to look
 ;; Use the nice down arrow to display folded content in org headlines
 (setq org-ellipsis "⤵")
 #+END_SRC
-Org Bullets need to look good
+=org-bullets= need to look good
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :ensure t
     :config
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-#+END_SRC
-Evil Keybindings
-#+BEGIN_SRC emacs-lisp
-(use-package evil-org
-  :ensure t
-  :after org
-  :config
-  (add-hook 'org-mode-hook 'evil-org-mode)
-  (add-hook 'evil-org-mode-hook
-            (lambda ()
-              (evil-org-set-key-theme)))
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
 #+END_SRC
 The emphasis markers in org mode aren't the *best*
 #+BEGIN_SRC emacs-lisp
@@ -558,6 +690,13 @@ I need org-agenda to tell me my TODOs from =index.org=
 #+BEGIN_SRC emacs-lisp
 (setq org-agenda-files (list org-index-file org-idea-file org-projects-file))
 #+END_SRC
+Save all org buffers when I quit agenda
+#+BEGIN_SRC emacs-lisp
+(add-hook 'org-agenda-mode-hook
+          (lambda ()
+            (add-hook 'auto-save-hook 'org-save-all-org-buffers nil t)
+            (auto-save-mode)))
+#+END_SRC
 I want to archive my TODOs into =archive.org= when I finish them
 #+BEGIN_SRC emacs-lisp
 (defun done-and-dusted ()
@@ -569,10 +708,6 @@ I want to archive my TODOs into =archive.org= when I finish them
 I want to know when I did these tasks as well
 #+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
-#+END_SRC
-I need to start adding text immediately when I start an org capture template (Insert mode)
-#+BEGIN_SRC emacs-lisp
-(add-hook 'org-capture-mode-hook 'evil-insert-state)
 #+END_SRC
 **** Capture Templates
 - Todo template
@@ -652,106 +787,6 @@ I want to open my journal using =C-c j=
   (end-of-buffer))
 (global-set-key (kbd "C-c j") 'fiddler/open-journal)
 #+END_SRC
-Org Agenda has extremely confusing keybindings
-#+BEGIN_SRC emacs-lisp
-(eval-after-load 'org-agenda
- '(progn
-    (evil-set-initial-state 'org-agenda-mode 'normal)
-    (evil-define-key 'normal org-agenda-mode-map
-      (kbd "<RET>") 'org-agenda-switch-to
-      (kbd "\t") 'org-agenda-goto
-
-      "q" 'org-agenda-quit
-      "r" 'org-agenda-redo
-      "S" 'org-save-all-org-buffers
-      "gj" 'org-agenda-goto-date
-      "gJ" 'org-agenda-clock-goto
-      "gm" 'org-agenda-bulk-mark
-      "go" 'org-agenda-open-link
-      "s" 'org-agenda-schedule
-      "+" 'org-agenda-priority-up
-      "," 'org-agenda-priority
-      "-" 'org-agenda-priority-down
-      "y" 'org-agenda-todo-yesterday
-      "n" 'org-agenda-add-note
-      "t" 'org-agenda-todo
-      ":" 'org-agenda-set-tags
-      ";" 'org-timer-set-timer
-      "I" 'helm-org-task-file-headings
-      "i" 'org-agenda-clock-in-avy
-      "O" 'org-agenda-clock-out-avy
-      "u" 'org-agenda-bulk-unmark
-      "x" 'org-agenda-exit
-      "j"  'org-agenda-next-line
-      "k"  'org-agenda-previous-line
-      "vt" 'org-agenda-toggle-time-grid
-      "va" 'org-agenda-archives-mode
-      "vw" 'org-agenda-week-view
-      "vl" 'org-agenda-log-mode
-      "vd" 'org-agenda-day-view
-      "vc" 'org-agenda-show-clocking-issues
-      "g/" 'org-agenda-filter-by-tag
-      "o" 'delete-other-windows
-      "gh" 'org-agenda-holiday
-      "gv" 'org-agenda-view-mode-dispatch
-      "f" 'org-agenda-later
-      "b" 'org-agenda-earlier
-      "c" 'helm-org-capture-templates
-      "e" 'org-agenda-set-effort
-      "n" nil  ; evil-search-next
-      "{" 'org-agenda-manipulate-query-add-re
-      "}" 'org-agenda-manipulate-query-subtract-re
-      "A" 'org-agenda-toggle-archive-tag
-      "." 'org-agenda-goto-today
-      "0" 'evil-digit-argument-or-evil-beginning-of-line
-      "<" 'org-agenda-filter-by-category
-      ">" 'org-agenda-date-prompt
-      "F" 'org-agenda-follow-mode
-      "D" 'org-agenda-deadline
-      "H" 'org-agenda-holidays
-      "J" 'org-agenda-next-date-line
-      "K" 'org-agenda-previous-date-line
-      "L" 'org-agenda-recenter
-      "P" 'org-agenda-show-priority
-      "R" 'org-agenda-clockreport-mode
-      "Z" 'org-agenda-sunrise-sunset
-      "T" 'org-agenda-show-tags
-      "X" 'org-agenda-clock-cancel
-      "[" 'org-agenda-manipulate-query-add
-      "g\\" 'org-agenda-filter-by-tag-refine
-"]" 'org-agenda-manipulate-query-subtract)))
-#+END_SRC
-The calendar in emacs has confusing keybindings as well.
-#+BEGIN_SRC emacs-lisp
-(define-minor-mode evil-calendar-mode
-  "Minor-mode for evil calendar integration.
-Active when in Emacs' `calendar-mode'."
-  :keymap (make-sparse-keymap))
-
-(add-hook 'calendar-mode-hook 'evil-calendar-mode)
-
-;;;; Movement
-
-;;; Forward/Backwards
-
-(evil-define-key 'motion evil-calendar-mode-map
-  ;; Forward/Backward
-  "l" 'calendar-forward-day
-  ")" 'calendar-forward-week
-  "}" 'calendar-forward-month
-  "]]" 'calendar-forward-year
-  "h" 'calendar-backward-day
-  "(" 'calendar-backward-week
-  "{" 'calendar-backward-month
-  "[[" 'calendar-backward-year
-  ;; Beginning/End
-  "b" 'calendar-beginning-of-week
-  "B" 'calendar-beginning-of-month
-  "^" 'calendar-beginning-of-year
-  "e" 'calendar-end-of-week
-  "E" 'calendar-end-of-month
-"$" 'calendar-end-of-year)
-#+END_SRC
 *** Notes and Org-Drill
 I want to be able to learn from my notes, that is, I want to Emacs to drill my notes so that I can learn
 First I need to setup a method to generate the note filename on the fly.
@@ -775,7 +810,7 @@ Notes template
                                        ;; Add timestamp
                                        "%(concat (fiddler/generate-note-template) \"\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?\")"))
 #+END_SRC
-Now for org drill
+=org-drill= to learn easily
 #+BEGIN_SRC emacs-lisp
 (use-package org-drill
   :defer t
@@ -784,11 +819,10 @@ Now for org drill
   :init (require 'cl)
   :config
   (setq org-drill-use-visible-cloze-face-p t)
-  (setq org-drill-hide-item-headings-p t)
-  )
+  (setq org-drill-hide-item-headings-p t))
 #+END_SRC
 *** Habits
-Install org-habit
+Install =org-habit=
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'org-modules 'org-habit)
 (require 'org-habit)
@@ -848,72 +882,8 @@ I have a file on my orgfiles which is a document on the keybindings in org. I wa
   (end-of-buffer))
 (global-set-key (kbd "C-c h") 'fiddler/open-org-help)
 #+END_SRC
-** Hydra
-Create menus to hint at keybindings where keybindings are a pain
-#+BEGIN_SRC emacs-lisp
-;; Install hydra
-(use-package hydra
-  :ensure t)
-#+END_SRC
-Hydras that I need
-*** Dired
-Press =.= in a dired buffer..
-#+BEGIN_SRC emacs-lisp
-(defhydra hydra-dired (:hint nil :color pink)
-  "
-_+_ mkdir          _v_iew           _m_ark             _(_ details        _i_nsert-subdir    wdired
-_C_opy             _O_ view other   _U_nmark all       _)_ omit-mode      _$_ hide-subdir    C-x C-q : edit
-_D_elete           _o_pen other     _u_nmark           _l_ redisplay      _w_ kill-subdir    C-c C-c : commit
-_R_ename           _M_ chmod        _t_oggle           _g_ revert buf     _e_ ediff          C-c ESC : abort
-_Y_ rel symlink    _G_ chgrp        _E_xtension mark   _s_ort             _=_ pdiff
-_S_ymlink          ^ ^              _F_ind marked      _._ toggle hydra   \\ flyspell
-_r_sync            ^ ^              ^ ^                ^ ^                _?_ summary
-_z_ compress-file  _A_ find regexp
-_Z_ compress       _Q_ repl regexp
-
-T - tag prefix
-"
-  ("\\" dired-do-ispell)
-  ("(" dired-hide-details-mode)
-  (")" dired-omit-mode)
-  ("+" dired-create-directory)
-  ("=" diredp-ediff)         ;; smart diff
-  ("?" dired-summary)
-  ("$" diredp-hide-subdir-nomove)
-  ("A" dired-do-find-regexp)
-  ("C" dired-do-copy)        ;; Copy all marked files
-  ("D" dired-do-delete)
-  ("E" dired-mark-extension)
-  ("e" dired-ediff-files)
-  ("F" dired-do-find-marked-files)
-  ("G" dired-do-chgrp)
-  ("g" revert-buffer)        ;; read all directories again (refresh)
-  ("i" dired-maybe-insert-subdir)
-  ("l" dired-do-redisplay)   ;; relist the marked or singel directory
-  ("M" dired-do-chmod)
-  ("m" dired-mark)
-  ("O" dired-display-file)
-  ("o" dired-find-file-other-window)
-  ("Q" dired-do-find-regexp-and-replace)
-  ("R" dired-do-rename)
-  ("r" dired-do-rsynch)
-  ("S" dired-do-symlink)
-  ("s" dired-sort-toggle-or-edit)
-  ("t" dired-toggle-marks)
-  ("U" dired-unmark-all-marks)
-  ("u" dired-unmark)
-  ("v" dired-view-file)      ;; q to exit, s to search, = gets line #
-  ("w" dired-kill-subdir)
-  ("Y" dired-do-relsymlink)
-  ("z" diredp-compress-this-file)
-  ("Z" dired-do-compress)
-  ("q" nil)
-  ("." nil :color blue))
-
-(define-key dired-mode-map "." 'hydra-dired/body)
-#+END_SRC
 ** Completion
-I use company for an inline completion
+I use =company= for an inline completion
 #+BEGIN_SRC emacs-lisp
 (use-package company
   :ensure t
