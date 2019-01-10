@@ -202,7 +202,7 @@ Undoing and redoing using =undo-tree= only
   (use-package undo-tree
     :ensure t
     :config
-    (undo-tree-mode))
+    (global-undo-tree-mode))
 #+END_SRC
 Make redo the redo of undo-tree
 #+BEGIN_SRC emacs-lisp
