@@ -97,42 +97,19 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
 (add-hook 'prog-mode-hook 'fiddler/buf-show-trailing-whitespace)
 #+END_SRC 
-Now for the major cosmetic changes. Use =doom-themes= and ~doom-dracula~
+Now for the major cosmetic changes. Use =kaolin-themes= and ~kaolin-aurora~
 #+BEGIN_SRC emacs-lisp
-(use-package doom-themes
-  :ensure t
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  (load-theme 'doom-dracula t)
-  (doom-themes-org-config))
-#+END_SRC
-*** Modeline
-Dependencies (=shrink-path=, =all-the-icons= and =eldoc-eval=)
-#+BEGIN_SRC emacs-lisp
-(use-package shrink-path
-             :ensure t)
-(use-package all-the-icons
-             :ensure t)
-(use-package eldoc-eval
-             :ensure t)
-#+END_SRC
-Install =doom-modeline=
-#+BEGIN_SRC emacs-lisp
-(use-package doom-modeline
-      :ensure t
-      :defer t
-      :requires (shrink-path eldoc-eval)
-      :hook (after-init . doom-modeline-init))
+  (use-package kaolin-themes
+    :ensure t
+    :config
+    (load-theme 'kaolin-aurora t))
 #+END_SRC
 *** Daemon Colors Fix
 Custom init functions
 #+BEGIN_SRC emacs-lisp
 (defun fiddler/init-theme (&optional frame)
   "Initiate the theme given an optional frame argument"
-  (load-theme 'doom-dracula t)
-  (doom-themes-org-config)
-  (doom-modeline-init)
+  (load-theme 'kaolin-aurora t)
   (message "Welcome to Fiddler-Emacs"))
 
 (defun fiddler/reload-theme-in-daemon (frame)
