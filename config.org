@@ -104,12 +104,24 @@ Now for the major cosmetic changes. Use =kaolin-themes= and ~kaolin-aurora~
     :config
     (load-theme 'kaolin-aurora t))
 #+END_SRC
+*** Modeline
+#+BEGIN_SRC emacs-lisp
+  (use-package doom-modeline
+    :ensure t
+    :defer t
+    :hook (after-init . doom-modeline-init)
+    :config
+    (setq doom-modeline-bar-width 3
+          doom-modeline-buffer-file-name-style 'truncate-with-project
+          doom-modeline-minor-modes nil))
+#+END_SRC
 *** Daemon Colors Fix
 Custom init functions
 #+BEGIN_SRC emacs-lisp
 (defun fiddler/init-theme (&optional frame)
   "Initiate the theme given an optional frame argument"
   (load-theme 'kaolin-aurora t)
+  (doom-modeline-init)
   (message "Welcome to Fiddler-Emacs"))
 
 (defun fiddler/reload-theme-in-daemon (frame)
