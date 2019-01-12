@@ -871,6 +871,23 @@ I have a file on my orgfiles which is a document on the keybindings in org. I wa
   (end-of-buffer))
 (global-set-key (kbd "C-c h") 'fiddler/open-org-help)
 #+END_SRC
+*** Blog
+Include =yaml-mode=
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/")
+  (require 'yaml-mode)
+#+END_SRC
+Create babel execute function for yaml
+#+BEGIN_SRC emacs-lisp
+  (defun org-babel-execute:yaml (body params) body)
+#+END_SRC
+Make org capture template to make a new blog post
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-capture-templates '("B" "Blog Post"
+                                         plain
+                                         (file fiddler/generate-blog-post)
+                                         "%?"))
+#+END_SRC
 ** Completion
 I use =company= for an inline completion
 #+BEGIN_SRC emacs-lisp
