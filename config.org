@@ -475,15 +475,6 @@ Edit =json= nicely
   (add-hook 'elm-mode-hook 'company/elm-mode-hook)
 (custom-set-variables '(elm-format-on-save t)))
 #+END_SRC
-**** Rails
-=projectile-rails= can help find files rails understands
-#+BEGIN_SRC emacs-lisp
-  (use-package projectile-rails
-    :ensure t
-    :config
-    (projectile-rails-global-mode)
-    (setq projectile-rails-keymap-prefix (kbd "C-c p C-r")))
-#+END_SRC
 *** Clojure
 Install =clojure-mode=
 #+BEGIN_SRC emacs-lisp
