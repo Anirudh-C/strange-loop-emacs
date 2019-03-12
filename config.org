@@ -865,7 +865,7 @@ I have a file on my orgfiles which is a document on the keybindings in org. I wa
 *** Blog
 Include =yaml-mode=
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "~/.emacs.d/")
+  (add-to-list 'load-path "~/.emacs.d/lisp")
   (require 'yaml-mode)
 #+END_SRC
 Create babel execute function for yaml
