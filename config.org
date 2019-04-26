@@ -97,12 +97,15 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
 (add-hook 'prog-mode-hook 'fiddler/buf-show-trailing-whitespace)
 #+END_SRC 
-Now for the major cosmetic changes. Use =kaolin-themes= and ~kaolin-aurora~
+Now for the major cosmetic changes. Use doom-emacs-themes
 #+BEGIN_SRC emacs-lisp
-  (use-package kaolin-themes
+  (use-package doom-themes
     :ensure t
     :config
-    (load-theme 'kaolin-aurora t))
+    (setq doom-themes-enable-bold t
+          doom-themes-enable-italic t)
+    (load-theme 'doom-Iosvkem)
+    (doom-themes-org-config))
 #+END_SRC
 *** Modeline
 #+BEGIN_SRC emacs-lisp
@@ -120,7 +123,8 @@ Custom init functions
 #+BEGIN_SRC emacs-lisp
 (defun fiddler/init-theme (&optional frame)
   "Initiate the theme given an optional frame argument"
-  (load-theme 'kaolin-aurora t)
+  (load-theme 'doom-Iosvkem t)
+  (doom-themes-org-config)
   (doom-modeline-init)
   (message "Welcome to Fiddler-Emacs"))
 
@@ -421,28 +425,6 @@ Dependencies (=simple-httpd= to start http server and =htmlize= for additional f
   :ensure t)
 #+END_SRC
 **** Javascript
-#+BEGIN_SRC emacs-lisp
-(use-package js2-mode
-  :ensure t)
-#+END_SRC
-Use =indium= in =js2-mode=
-#+BEGIN_SRC emacs-lisp
-  (use-package indium
-    :ensure t
-    :config
-    (eval-when-compile
-  (add-hook 'js-mode-hook #'indium-interaction-mode)))
-#+END_SRC
-Refactoring in =js2-mode=
-#+BEGIN_SRC emacs-lisp
-  (use-package js2-refactor
-    :ensure t
-    :defer t
-    :config
-    (add-hook 'js2-mode-hook #'js2-refactor-mode)
-    (add-hook 'js-mode #'js2-refactor-mode)
-  (js2r-add-keybindings-with-prefix "C-c C-m"))
-#+END_SRC
 Edit =json= nicely
 #+BEGIN_SRC emacs-lisp
   (use-package json-mode
@@ -456,12 +438,9 @@ Edit =json= nicely
   (use-package rjsx-mode
     :ensure t
     :defer t
+    :mode (("\\.js\\'" . rjsx-mode))
     :config
-    (defun emmet/rjsx-mode-hook ()
-      (setq-default emmet-expand-jsx-className? t)
-      (emmet-mode))
-    (add-hook 'rjsx-mode-hook 'emmet/rjsx-mode-hook)
-  (setq-default rjsx-indent-level 2))
+    (setq-default rjsx-indent-level 2))
 #+END_SRC
 =elm-mode=
 #+BEGIN_SRC emacs-lisp
