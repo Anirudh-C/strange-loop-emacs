@@ -46,10 +46,6 @@ I don't like the default startup area message
 (defun display-startup-echo-area-message ()
   (message "Welcome to Fiddler-Emacs"))
 #+END_SRC
-Show line numbers
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'find-file-hook 'linum-mode)
-#+END_SRC
 *** Theme
 I need emacs to look exactly like I want it to, so
 start by removing the default startup buffer
@@ -97,42 +93,43 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
 (add-hook 'prog-mode-hook 'fiddler/buf-show-trailing-whitespace)
 #+END_SRC 
-Now for the major cosmetic changes. Use doom-emacs-themes
+Now for the major cosmetic changes. Use =challenger-deep-theme=
 #+BEGIN_SRC emacs-lisp
-  (use-package doom-themes
+  (use-package challenger-deep-theme
     :ensure t
     :config
-    (setq doom-themes-enable-bold t
-          doom-themes-enable-italic t)
-    (load-theme 'doom-Iosvkem)
-    (doom-themes-org-config))
+    (load-theme 'challenger-deep t))
+#+END_SRC
+Use =Iosevka= font
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist
+               '(font . "Iosevka-11"))
 #+END_SRC
 *** Modeline
 #+BEGIN_SRC emacs-lisp
-  (use-package doom-modeline
-    :ensure t
-    :defer t
-    :hook (after-init . doom-modeline-init)
-    :config
-    (setq doom-modeline-bar-width 3
-          doom-modeline-buffer-file-name-style 'truncate-with-project
-          doom-modeline-minor-modes nil))
+(use-package doom-modeline
+  :ensure t
+  :defer t
+  :hook (after-init . doom-modeline-init)
+  :config
+  (setq doom-modeline-bar-width 3
+        doom-modeline-buffer-file-name-style 'truncate-with-project
+        doom-modeline-minor-modes nil))
 #+END_SRC
 *** Daemon Colors Fix
 Custom init functions
 #+BEGIN_SRC emacs-lisp
-(defun fiddler/init-theme (&optional frame)
-  "Initiate the theme given an optional frame argument"
-  (load-theme 'doom-Iosvkem t)
-  (doom-themes-org-config)
-  (doom-modeline-init)
-  (message "Welcome to Fiddler-Emacs"))
+  (defun fiddler/init-theme (&optional frame)
+    "Initiate the theme given an optional frame argument"
+    (load-theme 'challenger-deep t)
+    (doom-modeline-init)
+    (message "Welcome to Fiddler-Emacs"))
 
-(defun fiddler/reload-theme-in-daemon (frame)
-  "Force the theme on the running frame (created via the daemon)"
-  (when (or (daemonp) (not (display-graphic-p)))
-    (with-selected-frame frame
-      (run-with-timer 0.1 nil #'fiddler/init-theme))))
+  (defun fiddler/reload-theme-in-daemon (frame)
+    "Force the theme on the running frame (created via the daemon)"
+    (when (or (daemonp) (not (display-graphic-p)))
+      (with-selected-frame frame
+        (run-with-timer 0.1 nil #'fiddler/init-theme))))
 #+END_SRC
 Run functions after creating a new frame
 #+BEGIN_SRC emacs-lisp
