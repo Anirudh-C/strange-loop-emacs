@@ -3,18 +3,12 @@ This repository contains my emacs configuration within the <kbd>config.org</kbd>
 
 ## Install
 1. Install Emacs (obviously)
-2. Make yourself a <kbd>.emacs.d/</kbd> directory, if Emacs didn't make one for you
+2. Clone this repo (make sure to remove the <kbd>.emacs.d/</kbd> folder if it already exists)
 
    ``` shell
-   $ mkdir .emacs.d/
+   $ git clone https://github.com/Anirudh-C/fiddler-emacs.git ~/.emacs.d
    ```
-3. Change into <kbd>.emacs.d/</kbd> and clone this repo there.
-
-   ``` shell
-   $ cd .emacs.d/
-   $ git clone https://github.com/Anirudh-C/fiddler-emacs.git
-   ```
-4. And you're done. Start Emacs (make sure you have a working internet connection) and wait for it to install all the packages.
+3. And you're done. Start Emacs (make sure you have a working internet connection) and wait for it to install all the packages.
 
 ## Adding More Config
 If you have a look at the <kbd>init.el</kbd> file, you will see just a couple of lines.
