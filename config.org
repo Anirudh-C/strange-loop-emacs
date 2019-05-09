@@ -289,13 +289,15 @@ Setup =swiper= for search
     :bind (("C-s" . swiper)
            ("C-r" . swiper)))
 #+END_SRC
-*** Ranger
-Use =ranger= like behaviour in dired
+*** File Management
+Use =neotree=
 #+BEGIN_SRC emacs-lisp
-  (use-package ranger
+  (use-package neotree
     :ensure t
     :config
-    (ranger-override-dired-mode t))
+    (require 'neotree)
+    (global-set-key (kbd "C-S-n") 'neotree-toggle)
+    (setq neo-theme 'nerd))
 #+END_SRC
 *** Multiple Cursors
 Use =multiple-cursors= behaviour
