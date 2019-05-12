@@ -798,6 +798,22 @@ Template for capturing habits
                                       (file+headline org-index-file "Habits")
                                       "** TODO %^{Title} \nSCHEDULED: %(fiddler/gen-habit-timestamp) %(fiddler/gen-habit-props) %?"))
 #+END_SRC
+*** Brain
+Use =org-brain= for concept learning
+#+BEGIN_SRC emacs-lisp
+    (use-package org-brain :ensure t
+      :init
+      (setq org-brain-path "~/org/brain/")
+      :config
+      (setq org-id-track-globally t)
+      (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
+      (push '("b" "Brain" plain (function org-brain-goto-end)
+              "* %i%?" :empty-lines 1)
+            org-capture-templates)
+      (setq org-brain-visualize-default-choices 'all)
+      (setq org-brain-title-max-length 12)
+      (global-set-key (kbd "C-c v") 'org-brain-visualize))
+#+END_SRC
 *** Export
 Allow =babel= to evaluate emacs lisp, python, C, C++ and gnuplot code
 #+BEGIN_SRC emacs-lisp
@@ -849,13 +865,6 @@ Include =yaml-mode=
 Create babel execute function for yaml
 #+BEGIN_SRC emacs-lisp
   (defun org-babel-execute:yaml (body params) body)
-#+END_SRC
-Make org capture template to make a new blog post
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'org-capture-templates '("B" "Blog Post"
-                                         plain
-                                         (file fiddler/generate-blog-post)
-                                         "%?"))
 #+END_SRC
 ** Completion
 I use =company= for an inline completion
