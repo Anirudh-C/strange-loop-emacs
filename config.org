@@ -622,7 +622,7 @@ Some basic keybindings
 #+BEGIN_SRC emacs-lisp
   (define-key global-map "\C-cl" 'org-store-link)
   (define-key global-map "\C-ca" 'org-agenda)
-  (define-key global-map "\C-cc" 'org-capture)
+  (define-key global-map "\C-cc" 'counsel-org-capture)
 #+END_SRC
 Hitting =C-c C-x C-s= should mark my todo as done and move it to =archive.org=
 #+BEGIN_SRC emacs-lisp
