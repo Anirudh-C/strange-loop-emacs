@@ -141,7 +141,7 @@ Initiate theme in GUI
 (fiddler/init-theme)
 #+END_SRC
 ** User Interface
-i3 uses Alt as a modifier
+dwm uses Alt as a modifier
 #+BEGIN_SRC emacs-lisp
 (setq x-super-keysym 'meta)
 #+END_SRC
@@ -204,6 +204,13 @@ Make redo the redo of undo-tree
 #+BEGIN_SRC emacs-lisp
 (defalias 'redo 'undo-tree-redo)
 #+END_SRC
+Jump buffers super fast? Yes, please
+#+begin_src emacs-lisp
+  (use-package frog-jump-buffer
+    :ensure t
+    :config
+    (global-set-key (kbd "C-;") 'frog-jump-buffer))
+#+end_src
 *** Projects
 **** Git
 I use git to manage my projects and =magit= provides the interface
@@ -516,6 +523,10 @@ How I want org-mode to look
 The emphasis markers in org mode aren't the *best*
 #+BEGIN_SRC emacs-lisp
 (setq org-hide-emphasis-markers t)
+#+END_SRC
+*** Easy Templates
+#+BEGIN_SRC emacs-lisp
+(require 'org-tempo)
 #+END_SRC
 *** Tasks and Org-Capture
 **** Basic Setup
