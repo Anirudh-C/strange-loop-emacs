@@ -205,12 +205,12 @@ Make redo the redo of undo-tree
 (defalias 'redo 'undo-tree-redo)
 #+END_SRC
 Jump buffers super fast? Yes, please
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package frog-jump-buffer
     :ensure t
     :config
     (global-set-key (kbd "C-;") 'frog-jump-buffer))
-#+end_src
+#+END_SRC
 *** Projects
 **** Git
 I use git to manage my projects and =magit= provides the interface
@@ -327,6 +327,23 @@ Use =ace-window= to manage windows
     (global-set-key (kbd "M-o") 'ace-window)
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     (setq aw-background nil))
+#+END_SRC
+** God Mode
+God >> evil
+#+BEGIN_SRC emacs-lisp
+  (defun fiddler/update-cursor ()
+    (setq cursor-type (if (or god-local-mode buffer-read-only)
+                          'hollow
+                        'box)))
+  (use-package god-mode
+    :ensure t
+    :config
+    (global-set-key (kbd "<escape>") 'god-local-mode)
+    (add-hook 'god-mode-enabled-hook 'fiddler/update-cursor)
+    (add-hook 'god-mode-disabled-hook 'fiddler/update-cursor)
+    (global-set-key (kbd "C-x C-2") 'split-window-below)
+    (global-set-key (kbd "C-x C-3") 'split-window-right)
+    (define-key god-local-mode-map (kbd ".") 'repeat))
 #+END_SRC
 ** Environments
 *** Markdown
@@ -526,7 +543,7 @@ The emphasis markers in org mode aren't the *best*
 #+END_SRC
 *** Easy Templates
 #+BEGIN_SRC emacs-lisp
-(require 'org-tempo)
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 #+END_SRC
 *** Tasks and Org-Capture
 **** Basic Setup
