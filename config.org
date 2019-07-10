@@ -93,52 +93,53 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
 (add-hook 'prog-mode-hook 'fiddler/buf-show-trailing-whitespace)
 #+END_SRC 
-Now for the major cosmetic changes. Use =challenger-deep-theme=
-#+BEGIN_SRC emacs-lisp
-  (use-package challenger-deep-theme
-    :ensure t
-    :config
-    (load-theme 'challenger-deep t))
-#+END_SRC
 Use =Iosevka= font
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist
                '(font . "Iosevka-11"))
 #+END_SRC
+Use =kaolin-aurora=
+#+BEGIN_SRC emacs-lisp
+  (use-package kaolin-themes
+    :ensure t
+    :config
+    (load-theme 'kaolin-aurora t))
+#+END_SRC
 *** Modeline
+Use =telephone-line=
 #+BEGIN_SRC emacs-lisp
-(use-package doom-modeline
-  :ensure t
-  :defer t
-  :hook (after-init . doom-modeline-init)
-  :config
-  (setq doom-modeline-bar-width 3
-        doom-modeline-buffer-file-name-style 'truncate-with-project
-        doom-modeline-minor-modes nil))
-#+END_SRC
-*** Daemon Colors Fix
-Custom init functions
-#+BEGIN_SRC emacs-lisp
-  (defun fiddler/init-theme (&optional frame)
-    "Initiate the theme given an optional frame argument"
-    (load-theme 'challenger-deep t)
-    (doom-modeline-init)
-    (message "Welcome to Fiddler-Emacs"))
+  (use-package telephone-line
+    :ensure t
+    :config
+    ;; Define custom face for modified indicator
+    (defface fiddler-cyan '((t (:foreground "#62D2DB" :background "#191f26"))) "")
+    ;; Define telephone-line faces
+    (setq telephone-line-faces
+          '((cyan . (fiddler-cyan . fiddler-cyan))
+            (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
+            (nil . (mode-line . mode-line-inactive))))
+    ;; Custom Segments
+    (require 'telephone-line-utils)
+    (telephone-line-defsegment telephone-line-god-segment ()
+      (telephone-line-raw (if god-local-mode "<G>")))
+    ;; Left Modules
+    (setq telephone-line-lhs
+          '((cyan . (telephone-line-buffer-modified-segment))
+            (accent . (telephone-line-vc-segment))
+            (nil    . (telephone-line-projectile-buffer-segment))))
+    ;; Right Modules
+    (setq telephone-line-rhs
+          '((nil . (telephone-line-misc-info-segment))
+            (cyan . (telephone-line-god-segment))
+            (accent . (telephone-line-major-mode-segment))))
+    ;; Define the separators
+    (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+        telephone-line-secondary-left-separator 'telephone-line-cubed-left
+        telephone-line-primary-right-separator 'telephone-line-cubed-right
+        telephone-line-secondary-right-separator 'telephone-line-cubed-right)
+    (setq telephone-line-height 24)
 
-  (defun fiddler/reload-theme-in-daemon (frame)
-    "Force the theme on the running frame (created via the daemon)"
-    (when (or (daemonp) (not (display-graphic-p)))
-      (with-selected-frame frame
-        (run-with-timer 0.1 nil #'fiddler/init-theme))))
-#+END_SRC
-Run functions after creating a new frame
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-make-frame-functions #'fiddler/init-theme)
-(add-hook 'after-make-frame-functions #'fiddler/reload-theme-in-daemon)
-#+END_SRC
-Initiate theme in GUI
-#+BEGIN_SRC emacs-lisp
-(fiddler/init-theme)
+    (telephone-line-mode))
 #+END_SRC
 ** User Interface
 dwm uses Alt as a modifier
