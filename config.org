@@ -35,11 +35,13 @@ Load =use-package= while compiling
 (eval-when-compile
   (require 'use-package))
 #+END_SRC
+
 ** Tell Emacs who I am
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Anirudh C"
       user-mail-address "anirudh.c@iiitb.org")
 #+END_SRC
+
 ** Cosmetics
 I don't like the default startup area message
 #+BEGIN_SRC emacs-lisp
@@ -346,6 +348,7 @@ God >> evil
     (global-set-key (kbd "C-x C-3") 'split-window-right)
     (define-key god-local-mode-map (kbd ".") 'repeat))
 #+END_SRC
+
 ** Environments
 *** Markdown
 Highlighting using =markdown-mode=
@@ -804,6 +807,7 @@ I use =company= for an inline completion
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous))
 #+END_SRC
+
 ** Config Sugar
 Make all prompts y or n instead of yes or no
 #+BEGIN_SRC emacs-lisp
