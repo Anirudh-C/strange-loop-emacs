@@ -9,9 +9,6 @@ Add common package archives
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
-(setq package-archives '(("gnu" . "http://mirrors.163.com/elpa/gnu/")
-                         ("melpa" . "https://melpa.org/packages/")
-                         ("org" . "http://orgmode.org/elpa/")))
 #+END_SRC
 Ensure that packages aren't loaded again after processing the init file
 #+BEGIN_SRC emacs-lisp
@@ -99,7 +96,7 @@ I don't like trailing whitespaces as it messes so many things up
 Use =Iosevka= font
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist
-               '(font . "Iosevka-11"))
+               '(font . "Iosevka-10"))
 #+END_SRC
 Use =kaolin-aurora=
 #+BEGIN_SRC emacs-lisp
