@@ -6,9 +6,9 @@ Load =package.el=
 #+END_SRC
 Add common package archives
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
 #+END_SRC
 Ensure that packages aren't loaded again after processing the init file
 #+BEGIN_SRC emacs-lisp
@@ -23,6 +23,7 @@ Customize puts a lot of stuff into my =init.el=
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 #+END_SRC
+
 ** Configure =use-package=
 Install =use-package= if not installed
 #+BEGIN_SRC emacs-lisp
@@ -143,6 +144,7 @@ Use =telephone-line=
 
     (telephone-line-mode))
 #+END_SRC
+
 ** User Interface
 dwm uses Alt as a modifier
 #+BEGIN_SRC emacs-lisp
@@ -297,6 +299,7 @@ Use =neotree=
     (global-set-key (kbd "C-S-n") 'neotree-toggle)
     (setq neo-theme 'nerd))
 #+END_SRC
+
 *** Multiple Cursors
 Use =multiple-cursors= behaviour
 #+BEGIN_SRC emacs-lisp
@@ -307,6 +310,7 @@ Use =multiple-cursors= behaviour
     (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
     (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
 #+END_SRC
+
 *** Easy Killing
 Use =easy-kill= instead of =kill-ring-save=
 #+BEGIN_SRC emacs-lisp
@@ -321,6 +325,7 @@ Browse the kill-ring easily using =browse-kill-ring=
   (use-package browse-kill-ring
     :ensure t)
 #+END_SRC
+
 *** Window Management
 Use =ace-window= to manage windows
 #+BEGIN_SRC emacs-lisp
@@ -331,6 +336,7 @@ Use =ace-window= to manage windows
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     (setq aw-background nil))
 #+END_SRC
+
 ** God Mode
 God >> evil
 #+BEGIN_SRC emacs-lisp
@@ -363,6 +369,7 @@ Highlighting using =markdown-mode=
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 #+END_SRC
+
 *** Web
 Install some dependencies (=rainbow-mode= for colors, =css-mode= for css highlighting)
 #+BEGIN_SRC emacs-lisp
@@ -469,6 +476,7 @@ Edit =json= nicely
   (add-hook 'elm-mode-hook 'company/elm-mode-hook)
 (custom-set-variables '(elm-format-on-save t)))
 #+END_SRC
+
 *** Clojure
 Install =clojure-mode=
 #+BEGIN_SRC emacs-lisp
@@ -480,6 +488,7 @@ Install =cider= for REPL interaction
 (use-package cider
   :ensure t)
 #+END_SRC
+
 *** PDF
 Install and configure =pdf-tools=
 #+BEGIN_SRC emacs-lisp
@@ -489,6 +498,7 @@ Install and configure =pdf-tools=
   (pdf-tools-install)
   (setq-default pdf-view-display-size 'fit-width))
 #+END_SRC
+
 *** Ebooks
 Use =nov.el= to open ebooks
 #+BEGIN_SRC emacs-lisp
@@ -497,6 +507,7 @@ Use =nov.el= to open ebooks
     :config
     (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 #+END_SRC
+
 *** Python
 Run the following =pip= install first
 #+BEGIN_SRC sh
@@ -509,6 +520,7 @@ Install =elpy=
     :config
     (elpy-enable))
 #+END_SRC
+
 *** Lisp
 Use =smartparens=
 #+BEGIN_SRC emacs-lisp
@@ -518,11 +530,13 @@ Use =smartparens=
     (require 'smartparens-config)
     (smartparens-global-mode))
 #+END_SRC
+
 *** Drawing
 Install =artist-mode=
 #+BEGIN_SRC emacs-lisp
   (require 'artist)
 #+END_SRC
+
 ** Org Mode
 *** Display
 How I want org-mode to look
@@ -545,10 +559,12 @@ The emphasis markers in org mode aren't the *best*
 #+BEGIN_SRC emacs-lisp
 (setq org-hide-emphasis-markers t)
 #+END_SRC
+
 *** Easy Templates
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 #+END_SRC
+
 *** Tasks and Org-Capture
 **** Basic Setup
 I have all my org files in a directory =~/org/= and I also have an index file which has all my TODOs in an outline and
@@ -687,9 +703,8 @@ I want to open my journal using =C-c j=
   (end-of-buffer))
 (global-set-key (kbd "C-c j") 'fiddler/open-journal)
 #+END_SRC
-*** Notes and Org-Drill
-I want to be able to learn from my notes, that is, I want to Emacs to drill my notes so that I can learn
-First I need to setup a method to generate the note filename on the fly.
+*** Notes
+Setup a method to generate the note filename on the fly.
 #+BEGIN_SRC emacs-lisp
 (defun fiddler/generate-note ()
   "Generate a note in the notes directory"
@@ -704,17 +719,7 @@ Notes template
                                        ;; Add timestamp
                                        "#+TITLE: %^{Title}\n#+AUTHOR: Anirudh C\n* %?"))
 #+END_SRC
-=org-drill= to learn easily
-#+BEGIN_SRC emacs-lisp
-(use-package org-drill
-  :defer t
-  :ensure org-plus-contrib
-  :commands (org-drill)
-  :init (require 'cl)
-  :config
-  (setq org-drill-use-visible-cloze-face-p t)
-  (setq org-drill-hide-item-headings-p t))
-#+END_SRC
+
 *** Habits
 Install =org-habit=
 #+BEGIN_SRC emacs-lisp
@@ -734,6 +739,7 @@ Template for capturing habits
                                       (file+headline org-index-file "Habits")
                                       "** TODO %^{Title} \nSCHEDULED: %(fiddler/gen-habit-timestamp) %(fiddler/gen-habit-props) %?"))
 #+END_SRC
+
 *** Brain
 Use =org-brain= for concept learning
 #+BEGIN_SRC emacs-lisp
@@ -750,6 +756,7 @@ Use =org-brain= for concept learning
       (setq org-brain-title-max-length 12)
       (global-set-key (kbd "C-c v") 'org-brain-visualize))
 #+END_SRC
+
 *** Export
 Allow =babel= to evaluate emacs lisp, python, C, C++ and gnuplot code
 #+BEGIN_SRC emacs-lisp
@@ -782,6 +789,7 @@ Make all code blocks syntax highlighted
       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 #+END_SRC
+
 *** Help
 I have a file on my orgfiles which is a document on the keybindings in org. I want to open it quickly.
 #+BEGIN_SRC emacs-lisp
@@ -792,6 +800,7 @@ I have a file on my orgfiles which is a document on the keybindings in org. I wa
   (end-of-buffer))
 (global-set-key (kbd "C-c h") 'fiddler/open-org-help)
 #+END_SRC
+
 ** Completion
 I use =company= for an inline completion
 #+BEGIN_SRC emacs-lisp
@@ -830,3 +839,4 @@ Refresh the configuration inplace without restarting emacs
   (load-file "~/.emacs.d/init.el")
   (message "Reloaded Config"))
 #+END_SRC
+
