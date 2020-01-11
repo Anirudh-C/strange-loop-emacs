@@ -99,7 +99,7 @@ I don't like trailing whitespaces as it messes so many things up
 Use =Iosevka= font
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist
-               '(font . "Iosevka-10"))
+               '(font . "Iosevka-13"))
 #+END_SRC
 Use =kaolin-aurora=
 #+BEGIN_SRC emacs-lisp
@@ -506,19 +506,6 @@ Use =nov.el= to open ebooks
     :ensure t
     :config
     (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
-#+END_SRC
-
-*** Python
-Run the following =pip= install first
-#+BEGIN_SRC sh
-pip install --user jedi flake8 autopep8 yapf
-#+END_SRC
-Install =elpy=
-#+BEGIN_SRC emacs-lisp
-  (use-package elpy
-    :ensure t
-    :config
-    (elpy-enable))
 #+END_SRC
 
 *** Lisp
