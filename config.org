@@ -508,6 +508,18 @@ Use =nov.el= to open ebooks
     (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 #+END_SRC
 
+*** Python
+Run the following install first
+#+BEGIN_SRC shell
+pip3 install --user jedi flake8 autopep8 yapf
+#+END_SRC
+Install =elpy=
+#+BEGIN_SRC elisp
+  (use-package elpy
+    :ensure t
+    :config
+    (elpy-enable))
+#+END_SRC
 *** Lisp
 Use =smartparens=
 #+BEGIN_SRC emacs-lisp
@@ -639,11 +651,11 @@ I want to know when I did these tasks as well
                                           (file+olp+datetree "journal.org")
                                           "** %U %^{Title}\n%?"))
   #+END_SRC
-- Physics journal
+- Project Elective Journal
   #+BEGIN_SRC emacs-lisp
-    (add-to-list 'org-capture-templates '("J" "Physics: Chaos Theory Journal"
+    (add-to-list 'org-capture-templates '("J" "OCR Consensus Project Journal"
                                           entry
-                                          (file+olp+datetree "physics-journal.org")
+                                          (file+olp+datetree "journal.org")
                                           "** %U %^{Title}\n%?"))
   #+END_SRC
 - Project template
@@ -742,18 +754,19 @@ Template for capturing habits
 *** Brain
 Use =org-brain= for concept learning
 #+BEGIN_SRC emacs-lisp
-    (use-package org-brain :ensure t
-      :init
-      (setq org-brain-path "~/org/brain/")
-      :config
-      (setq org-id-track-globally t)
-      (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
-      (push '("b" "Brain" plain (function org-brain-goto-end)
-              "* %i%?" :empty-lines 1)
-            org-capture-templates)
-      (setq org-brain-visualize-default-choices 'all)
-      (setq org-brain-title-max-length 12)
-      (global-set-key (kbd "C-c v") 'org-brain-visualize))
+  (use-package org-brain :ensure t
+    :init
+    (setq org-brain-path "~/org/brain/")
+    :config
+    (setq org-id-track-globally t)
+    (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
+    (push '("b" "Brain" plain (function org-brain-goto-end)
+            "* %i%?" :empty-lines 1)
+          org-capture-templates)
+    (setq org-brain-scan-directories-recursively nil)
+    (setq org-brain-visualize-default-choices 'all)
+    (setq org-brain-title-max-length 12)
+    (global-set-key (kbd "C-c v") 'org-brain-visualize))
 #+END_SRC
 
 *** Export
