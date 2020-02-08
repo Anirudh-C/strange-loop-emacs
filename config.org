@@ -517,7 +517,7 @@ Install =elpy=
 #+BEGIN_SRC elisp
   (use-package elpy
     :ensure t
-    :config
+    :init
     (elpy-enable))
 #+END_SRC
 *** Lisp
@@ -588,13 +588,11 @@ I can also setup my archive file
 (setq org-archive-location
       (concat (org-file-path "archive.org") "::* From %s"))
 #+END_SRC
-I need org-agenda to tell me my TODOs from =index.org, journal.org= and =physics-journal.org=
+I need org-agenda to tell me my TODOs
 #+BEGIN_SRC emacs-lisp
   (setq fiddler/org-agenda-files (list org-index-file
                                        org-idea-file
-                                       org-projects-file
-                                       (org-file-path "journal.org")
-                                       (org-file-path "physics-journal.org")))
+                                       org-projects-file))
   (setq org-agenda-files fiddler/org-agenda-files)
 #+END_SRC
 Save all org buffers when I quit agenda
@@ -633,16 +631,10 @@ I want to know when I did these tasks as well
   #+END_SRC
 - Books template
   #+BEGIN_SRC emacs-lisp
-    (defun fiddler/file-link ()
-      "Template expansion function to add file link"
-      (let ((filename (read-file-name "Book Location: ")))
-        (format "[[%s][Local]]" filename)))
-  #+END_SRC
-  #+BEGIN_SRC emacs-lisp
     (add-to-list 'org-capture-templates '("B" "Books"
                                           entry
                                           (file "books.org")
-                                          "* BOOK %^{Title} %^g \n:PROPERTIES:\n:CREATED: %U\n:AUTHOR: %^{Author} \n:LINK: %(fiddler/file-link) \n:END:\n%?"))
+                                          "* BOOK %^{Title} %^g \n:PROPERTIES:\n:CREATED: %U\n:AUTHOR: %^{Author} \n:FILENAME: %^{Filename} \n:END:\n%?"))
   #+END_SRC
 - Journal template
   #+BEGIN_SRC emacs-lisp
@@ -655,8 +647,8 @@ I want to know when I did these tasks as well
   #+BEGIN_SRC emacs-lisp
     (add-to-list 'org-capture-templates '("J" "OCR Consensus Project Journal"
                                           entry
-                                          (file+olp+datetree "journal.org")
-                                          "** %U %^{Title}\n%?"))
+                                          (file+olp+datetree "ocr-pe-journal.org")
+                                          "** %U %^{Title} %^g \n%?"))
   #+END_SRC
 - Project template
   #+BEGIN_SRC emacs-lisp
@@ -710,7 +702,7 @@ I want to open my journal using =C-c j=
 (defun fiddler/open-journal ()
   "Open the master org TODO list."
   (interactive)
-  (find-file "~/org/journal.org")
+  (find-file "~/org/ocr-pe-journal.org")
   (end-of-buffer))
 (global-set-key (kbd "C-c j") 'fiddler/open-journal)
 #+END_SRC
@@ -845,10 +837,11 @@ Open my config quickly
 #+END_SRC
 Refresh the configuration inplace without restarting emacs
 #+BEGIN_SRC emacs-lisp
-(defun fiddler/reload-config ()
-  "Reload config on the fly without restarting emacs"
-  (interactive)
-  (load-file "~/.emacs.d/init.el")
-  (message "Reloaded Config"))
+  (defun fiddler/reload-config ()
+    "Reload config on the fly without restarting emacs"
+    (interactive)
+    (load-file "~/.emacs.d/init.el")
+    (message "Reloaded Config"))
+  (global-set-key (kbd "C-c f") 'fiddler/reload-config)
 #+END_SRC
 
