@@ -707,20 +707,14 @@ I want to open my journal using =C-c j=
 (global-set-key (kbd "C-c j") 'fiddler/open-journal)
 #+END_SRC
 *** Notes
-Setup a method to generate the note filename on the fly.
+Use =org-noter= to make notes
 #+BEGIN_SRC emacs-lisp
-(defun fiddler/generate-note ()
-  "Generate a note in the notes directory"
-  (setq note-name (read-string "File: "))
-  (expand-file-name (format "%s.org" note-name) "~/org/notes/"))
-#+END_SRC
-Notes template
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'org-capture-templates '("n" "Notes"
-                                       plain
-                                       (file fiddler/generate-note)
-                                       ;; Add timestamp
-                                       "#+TITLE: %^{Title}\n#+AUTHOR: Anirudh C\n* %?"))
+  (use-package org-noter
+      :after org
+      :ensure t
+      :config (setq org-noter-default-notes-file-names '("notes.org")
+                    org-noter-notes-search-path '("~/org/notes")
+                    org-noter-separate-notes-from-heading t))
 #+END_SRC
 
 *** Habits
