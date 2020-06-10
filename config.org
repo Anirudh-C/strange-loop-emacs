@@ -144,7 +144,6 @@ Use =telephone-line=
 
     (telephone-line-mode))
 #+END_SRC
-
 ** User Interface
 dwm uses Alt as a modifier
 #+BEGIN_SRC emacs-lisp
@@ -559,6 +558,24 @@ The emphasis markers in org mode aren't the *best*
 (setq org-hide-emphasis-markers t)
 #+END_SRC
 
+*** Org Roam
+=org-roam= is an amazing way to build a concept mapping system and overall org 
+#+BEGIN_SRC emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :hook
+    (after-init . org-roam-mode)
+    :custom
+    (org-roam-directory "~/test")
+    :bind (:map org-roam-mode-map
+                (("C-c n l" . org-roam)
+                 ("C-c n f" . org-roam-find-file)
+                 ("C-c n j" . org-roam-jump-to-index)
+                 ("C-c n b" . org-roam-switch-to-buffer)
+                 ("C-c n g" . org-roam-graph))
+                :map org-mode-map
+                (("C-c n i" . org-roam-insert))))
+#+END_SRC
 *** Easy Templates
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
@@ -736,34 +753,17 @@ Template for capturing habits
                                       (file+headline org-index-file "Habits")
                                       "** TODO %^{Title} \nSCHEDULED: %(fiddler/gen-habit-timestamp) %(fiddler/gen-habit-props) %?"))
 #+END_SRC
-
-*** Brain
-Use =org-brain= for concept learning
-#+BEGIN_SRC emacs-lisp
-  (use-package org-brain :ensure t
-    :init
-    (setq org-brain-path "~/org/brain/")
-    :config
-    (setq org-id-track-globally t)
-    (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
-    (push '("b" "Brain" plain (function org-brain-goto-end)
-            "* %i%?" :empty-lines 1)
-          org-capture-templates)
-    (setq org-brain-scan-directories-recursively nil)
-    (setq org-brain-visualize-default-choices 'all)
-    (setq org-brain-title-max-length 12)
-    (global-set-key (kbd "C-c v") 'org-brain-visualize))
-#+END_SRC
-
 *** Export
-Allow =babel= to evaluate emacs lisp, python, C, C++ and gnuplot code
+Allow =babel= to evaluate emacs lisp, python, C, C++, OCaml and gnuplot code
 #+BEGIN_SRC emacs-lisp
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (python . t)
-   (C . t)
-   (gnuplot . t)))
+  (with-eval-after-load 'org
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (python . t)
+       (C . t)
+       (ocaml . t)
+       (gnuplot . t))))
 #+END_SRC
 Make =babel= evaluate code blocks without confirmation
 #+BEGIN_SRC emacs-lisp
@@ -787,7 +787,11 @@ Make all code blocks syntax highlighted
       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 #+END_SRC
-
+Org Beamer export
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'org
+    (require 'ox-beamer))
+#+END_SRC
 *** Help
 I have a file on my orgfiles which is a document on the keybindings in org. I want to open it quickly.
 #+BEGIN_SRC emacs-lisp
@@ -837,5 +841,8 @@ Refresh the configuration inplace without restarting emacs
     (load-file "~/.emacs.d/init.el")
     (message "Reloaded Config"))
   (global-set-key (kbd "C-c f") 'fiddler/reload-config)
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (org-reload)
 #+END_SRC
 
