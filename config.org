@@ -163,7 +163,7 @@ in emacs
 (use-package restart-emacs
   :ensure t)
 #+END_SRC
-Make a sratch buffer from thin air
+Make a scratch buffer from thin air
 #+BEGIN_SRC emacs-lisp
 (defun strange-loop/gen-scratch ()
   "Create and switch to a temporary scratch buffer with a random name."
@@ -211,6 +211,13 @@ Make redo the redo of undo-tree
 #+BEGIN_SRC emacs-lisp
 (defalias 'redo 'undo-tree-redo)
 #+END_SRC
+Capture note with buffer
+#+begin_src emacs-lisp
+  (defun strange-loop/capture-note ()
+    (interactive)
+    (switch-to-buffer "strange-loop-capture")
+    (org-mode))
+#+end_src
 *** Projects
 **** Git
 I use git to manage my projects and =magit= provides the interface
