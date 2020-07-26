@@ -511,12 +511,8 @@ Use =nov.el= to open ebooks
 #+END_SRC
 
 *** Python
-Run the following install first
-#+BEGIN_SRC shell
-pip3 install --user jedi flake8 autopep8 yapf
-#+END_SRC
 Install =elpy=
-#+BEGIN_SRC elisp
+#+BEGIN_SRC emacs-lisp
   (use-package elpy
     :ensure t
     :init
@@ -749,10 +745,6 @@ Make =babel= evaluate code blocks without confirmation
 #+BEGIN_SRC emacs-lisp
 (setq org-confirm-babel-evaluate nil)
 #+END_SRC
-Remove the footer in HTML exports
-#+BEGIN_SRC emacs-lisp
-(setq org-html-postamble nil)
-#+END_SRC
 Open the exported HTML files in FireFox
 #+BEGIN_SRC emacs-lisp
 (setq browse-url-browser-function 'browse-url-generic
@@ -787,6 +779,38 @@ Get easy templates back
 
   (require 'org-tempo)
 #+END_SRC
+BibTex export
+#+begin_src emacs-lisp
+  (require 'ox-bibtex)
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines))
+#+end_src
+Publishing export
+#+begin_src emacs-lisp
+    (setq org-publish-project-alist
+          '(("notes"
+             :base-directory "~/courses/RE7/"
+             :with-properties t
+             :recursive t
+             :html-doctype "html5"
+             :publishing-directory "~/courses/RE7/docs"
+             :publishing-function org-html-publish-to-html
+             :section-numbers 3
+             :with-title t
+             :with-toc nil
+             :html-head
+             "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://gongzhitaao.org/orgcss/org.css\">"
+             :html-postamble
+             "<span class=\"author\">%a</span> / <span class=\"date\">%T</span>"
+             :headline-levels 4)
+            ("bib-copy"
+             :base-directory "~/courses/RE7/"
+             :base-extension "html"
+             :publishing-directory "~/courses/RE7/docs"
+             :publishing-function org-publish-attachment
+             )
+            ("re-publish" :components ("notes" "bib-copy"))))
+#+end_src
 *** Help
 I have a file on my orgfiles which is a document on the keybindings in org. I want to open it quickly.
 #+BEGIN_SRC emacs-lisp
