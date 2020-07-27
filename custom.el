@@ -12,7 +12,7 @@
  '(org-roam-directory "~/org/brain")
  '(package-selected-packages
    (quote
-    (org-plus-contrib elpy deft el-patch org-noter org-roam org-bullets nov pdf-tools cider clojure-mode elm-mode rjsx-mode json-mode impatient-mode htmlize simple-httpd company-web web-mode emmet-mode rainbow-mode markdown-mode god-mode ace-window browse-kill-ring easy-kill multiple-cursors neotree ivy-rich counsel flx ivy projectile magit undo-tree restart-emacs try telephone-line dracula-theme rainbow-delimiters use-package)))
+    (org-pomodoro org-plus-contrib elpy deft el-patch org-noter org-roam org-bullets nov pdf-tools cider clojure-mode elm-mode rjsx-mode json-mode impatient-mode htmlize simple-httpd company-web web-mode emmet-mode rainbow-mode markdown-mode god-mode ace-window browse-kill-ring easy-kill multiple-cursors neotree ivy-rich counsel flx ivy projectile magit undo-tree restart-emacs try telephone-line dracula-theme rainbow-delimiters use-package)))
  '(send-mail-function (quote mailclient-send-it)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
