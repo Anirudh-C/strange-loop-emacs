@@ -638,6 +638,7 @@ I want to know when I did these tasks as well
 #+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
 #+END_SRC
+**** Pomodoro
 Notification callback using =zenity= for pomodoro timer
 #+begin_src emacs-lisp
   (defun strange-loop/notify (text)
@@ -684,16 +685,8 @@ Get =org-pomodoro= for that sweet efficiency
 
   (add-hook 'org-pomodoro-break-finished-hook
             (lambda ()
-              (strange-loop/notify "Short break over! Chop chop")))
-
-  (add-hook 'org-pomodoro-long-break-finished-hook
-            (lambda ()
-              (strange-loop/notify "Long break over!")))
-
-  (add-hook 'org-pomodoro-killed-hook
-            (lambda ()
-              (strange-loop/notify
-               (format "Moriturus te Saluto!" org-clock-heading))))
+              (interactive)
+              (org-pomodoro)))
 #+end_src
 **** Capture Templates
 - Todo template
