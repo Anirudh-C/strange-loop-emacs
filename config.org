@@ -633,13 +633,6 @@ I need org-agenda to tell me my TODOs
   (setq strange-loop/org-agenda-files (list org-index-file))
   (setq org-agenda-files strange-loop/org-agenda-files)
 #+END_SRC
-Save all org buffers when I quit agenda
-#+BEGIN_SRC emacs-lisp
-(add-hook 'org-agenda-mode-hook
-          (lambda ()
-            (add-hook 'auto-save-hook 'org-save-all-org-buffers nil t)
-            (auto-save-mode)))
-#+END_SRC
 I want to archive my TODOs into =archive.org= when I finish them
 #+BEGIN_SRC emacs-lisp
 (defun done-and-dusted ()
@@ -824,6 +817,10 @@ Custom agenda view
 Setup captures in org agenda
 #+begin_src emacs-lisp
   (define-key org-agenda-mode-map "c" 'org-capture)
+#+end_src
+We want sticky agendas
+#+begin_src emacs-lisp
+  (setq org-agenda-sticky t)
 #+end_src
 *** Notes
 Use =org-noter= to make notes
