@@ -807,6 +807,12 @@ Custom agenda view
            ((tags "PRIORITY=\"A\""
                   ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
                    (org-agenda-overriding-header "High-priority unfinished tasks:")))
+            (tags "coursework"
+                  ((org-agenda-skip-function '(strange-loop/skip-subtree-if-habit))
+                   (org-agenda-overriding-header "Course Related Items")))
+            (tags "work"
+                  ((org-agenda-skip-function '(strange-loop/skip-subtree-if-habit))
+                   (org-agenda-overriding-header "Work Related Items")))
             (agenda "" ((org-agenda-span 1)))
             (alltodo ""
                      ((org-agenda-skip-function '(or (strange-loop/skip-subtree-if-habit)
@@ -857,7 +863,8 @@ Habit settings
   (setq org-habit-preceding-days 7
         org-habit-show-habits-only-for-today nil
         org-habit-following-days 3
-        org-habit-show-done-always-green t)
+        org-habit-show-done-always-green t
+        org-habit-graph-column 80)
 #+end_src
 Habit colors
 #+begin_src emacs-lisp
