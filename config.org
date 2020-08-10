@@ -46,8 +46,9 @@ Load =use-package= while compiling
 ** Cosmetics
 I don't like the default startup area message
 #+BEGIN_SRC emacs-lisp
-(defun display-startup-echo-area-message ()
-  (message "Welcome to Strange Loop Emacs"))
+  (defun display-startup-echo-area-message ()
+    "My startup message"
+    (message "Welcome to Strange Loop Emacs"))
 #+END_SRC
 I don't like the default alert sound of emacs and would like a mode-line flash
 #+begin_src emacs-lisp
@@ -55,6 +56,7 @@ I don't like the default alert sound of emacs and would like a mode-line flash
         ring-bell-function 'strange-loop/flash-mode-line)
 
   (defun strange-loop/flash-mode-line ()
+    "Flash the modeline; can be used instead of bell"
     (invert-face 'mode-line)
     (run-with-timer 0.1 nil #'invert-face 'mode-line))
 #+end_src
@@ -106,17 +108,18 @@ I also want emacs to tell me which column I am in the buffer
 #+END_SRC
 I don't like trailing whitespaces as it messes so many things up
 #+BEGIN_SRC emacs-lisp
-(defun strange-loop/buf-show-trailing-whitespace ()
-  (interactive)
+  (defun strange-loop/buf-show-trailing-whitespace ()
+    "Show trailing whitespaces in buffer"
+    (interactive)
     (setq show-trailing-whitespace t))
-(add-hook 'prog-mode-hook 'strange-loop/buf-show-trailing-whitespace)
+  (add-hook 'prog-mode-hook 'strange-loop/buf-show-trailing-whitespace)
 #+END_SRC 
 Use =Iosevka= font
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist
                '(font . "Iosevka-13"))
 #+END_SRC
-Use =emacs-dracula=
+Use =emacs-dracula= cuz it matches the rest of the aesthetic on my system
 #+BEGIN_SRC emacs-lisp
   (use-package dracula-theme
     :ensure t
@@ -228,6 +231,7 @@ Make redo the redo of undo-tree
 Capture note with buffer
 #+begin_src emacs-lisp
   (defun strange-loop/capture-note ()
+    "Org mode generic note-capture in a new buffer"
     (interactive)
     (switch-to-buffer "strange-loop-capture")
     (org-mode))
@@ -357,6 +361,7 @@ Use =ace-window= to manage windows
 God >> evil
 #+BEGIN_SRC emacs-lisp
   (defun strange-loop/update-cursor ()
+    "Hook for updating the cursor to indicate God-mode"
     (setq cursor-type (if (or god-local-mode buffer-read-only)
                           'hollow
                         'box)))
@@ -649,6 +654,7 @@ I want to know when I did these tasks as well
 Notification callback using =zenity= for pomodoro timer
 #+begin_src emacs-lisp
   (defun strange-loop/notify (text)
+    "Callback to zenity to create notification"
     (call-process "zenity"
                   nil t nil
                   "--notification"
@@ -767,11 +773,10 @@ I want to open the books database using =C-c b=
 I want to open my journal using =C-c j= and switch using =C-x j=
 #+BEGIN_SRC emacs-lisp
   (defun strange-loop/open-journal ()
-    "Open the master org TODO list."
-    (interactive)
-    (find-file org-journal-file)
-    (end-of-buffer))
+    "Output the journal"
+    (message org-journal-file))
   (defun strange-loop/switch-journal ()
+    "Switch between journals located at ~/org/journals"
     (interactive)
     (setq org-journal-file (read-file-name "Journal: " "~/org/journals/")))
   (global-set-key (kbd "C-c j") 'strange-loop/open-journal)
@@ -817,8 +822,7 @@ Custom agenda view
             (alltodo ""
                      ((org-agenda-skip-function '(or (strange-loop/skip-subtree-if-habit)
                                                      (strange-loop/skip-subtree-if-priority ?A)))
-                      (org-agenda-overriding-header "All normal priority tasks:"))))
-           ((org-agenda-compact-blocks t)))))
+                      (org-agenda-overriding-header "All normal priority tasks:")))))))
 #+end_src
 Setup captures in org agenda
 #+begin_src emacs-lisp
@@ -847,16 +851,18 @@ Install =org-habit=
 #+END_SRC
 Template for capturing habits
 #+BEGIN_SRC emacs-lisp
-;; Generate the scheduled timestamp
-(defun strange-loop/gen-habit-timestamp ()
-  (org-insert-time-stamp (org-read-date nil t) t nil nil nil " .+1d"))
-;; Generate the properties for the habit
-(defun strange-loop/gen-habit-props ()
-  '"\n:PROPERTIES:\n:LOGGING: DONE(!) logrepeat\n:STYLE: habit\n:END:\n")
-(add-to-list 'org-capture-templates '("h" "Habit"
-                                      entry
-                                      (file+headline org-index-file "Habits")
-                                      "** TODO %^{Title} \nSCHEDULED: %(strange-loop/gen-habit-timestamp) %(strange-loop/gen-habit-props) %?"))
+  ;; Generate the scheduled timestamp
+  (defun strange-loop/gen-habit-timestamp ()
+    "Generate timestamp for habits"
+    (org-insert-time-stamp (org-read-date nil t) t nil nil nil " .+1d"))
+  ;; Generate the properties for the habit
+  (defun strange-loop/gen-habit-props ()
+    "Generate properties for org-habit"
+    '"\n:PROPERTIES:\n:LOGGING: DONE(!) logrepeat\n:STYLE: habit\n:END:\n")
+  (add-to-list 'org-capture-templates '("h" "Habit"
+                                        entry
+                                        (file+headline org-index-file "Habits")
+                                        "** TODO %^{Title} \nSCHEDULED: %(strange-loop/gen-habit-timestamp) %(strange-loop/gen-habit-props) %?"))
 #+END_SRC
 Habit settings
 #+begin_src emacs-lisp
