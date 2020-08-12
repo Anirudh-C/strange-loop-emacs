@@ -10,9 +10,13 @@ Add common package archives
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
 #+END_SRC
+Don't load outdated byte code
+#+BEGIN_SRC emacs-lisp
+  (setq load-prefer-newer t)
+#+END_SRC
 Ensure that packages aren't loaded again after processing the init file
 #+BEGIN_SRC emacs-lisp
-(setq package-enable-at-startup nil)
+  (setq package-enable-at-startup nil)
 #+END_SRC
 Initialize the package installation
 #+BEGIN_SRC emacs-lisp
@@ -707,7 +711,7 @@ Get =org-pomodoro= for that sweet efficiency
     (setq org-capture-templates '(("t" "Todo"
                                           entry
                                           (file org-index-file)
-                                          "* TODO %^{Todo} %^G \nDEADLINE: %^{Deadline}t \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")))
+                                          "* TODO %^{Todo} %^G \nSCHEDULED: %^{Schedule}T\nDEADLINE: %^{Deadline}T \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")))
   #+END_SRC
 - Books template
   #+BEGIN_SRC emacs-lisp
@@ -774,6 +778,7 @@ I want to open my journal using =C-c j= and switch using =C-x j=
 #+BEGIN_SRC emacs-lisp
   (defun strange-loop/open-journal ()
     "Output the journal"
+    (interactive)
     (message org-journal-file))
   (defun strange-loop/switch-journal ()
     "Switch between journals located at ~/org/journals"
