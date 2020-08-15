@@ -970,6 +970,8 @@ Publishing export
            :with-toc nil
            :html-head
            "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://gongzhitaao.org/orgcss/org.css\">"
+           :html-head-extra
+           "<style>.MathJax_Display{margin: 1em 0em !important;}</style>"
            :html-postamble
            "<span class=\"author\">%a</span> / <span class=\"date\">%T</span>"
            :headline-levels 4)
