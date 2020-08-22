@@ -68,11 +68,6 @@ Start Emacs clients in full screen
 #+begin_src emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src
-I want line numbers *everywhere*
-#+begin_src emacs-lisp
-  (global-linum-mode)
-#+end_src
-
 *** Theme
 I need emacs to look exactly like I want it to, so
 start by removing the default startup buffer
@@ -548,6 +543,10 @@ Install =elpy=
     :init
     (elpy-enable))
 #+END_SRC
+Line numbers in python files
+#+begin_src emacs-lisp
+  (add-hook 'python-mode-hook 'linum-mode)
+#+end_src
 *** Drawing
 Install =artist-mode=
 #+BEGIN_SRC emacs-lisp
