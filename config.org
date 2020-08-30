@@ -128,11 +128,6 @@ Use =emacs-dracula= cuz it matches the rest of the aesthetic on my system
     :config
     (load-theme 'dracula t))
 #+END_SRC
-Set trailing whitespace colour
-#+begin_src emacs-lisp
-  (custom-set-faces
- '(trailing-whitespace ((t (:background "#6272a4")))))
-#+end_src
 *** Modeline
 Use =telephone-line=
 #+BEGIN_SRC emacs-lisp
@@ -363,6 +358,21 @@ Use =ace-window= to manage windows
     (setq aw-background nil))
 #+END_SRC
 
+*** Which Key
+Good to know what I'm pressing
+#+begin_src emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-mode))
+#+end_src
+Which key in a posframe
+#+begin_src emacs-lisp
+  (use-package which-key-posframe
+    :ensure t
+    :config
+    (which-key-posframe-mode))
+#+end_src
 ** God Mode
 God >> evil
 #+BEGIN_SRC emacs-lisp
@@ -899,32 +909,32 @@ Clean-up functions for RE publish
 #+begin_src emacs-lisp
     (defun re-html-publish-cleanup (props)
       "Remove all unnecessary html files after publishing RE"
-      (delete-file "~/courses/RE7/ref.html")
-      (delete-file "~/courses/RE7/ref_bib.html"))
+      (delete-file "~/courses/semester-7/RE/ref.html")
+      (delete-file "~/courses/semester-7/RE/ref_bib.html"))
 
     (defun re-latex-publish-cleanup (props)
       "Remove all unnecessary files after publishing RE to pdf"
-      (delete-file "~/courses/RE7/index.bbl")
-      (delete-file "~/courses/RE7/index.pdf")
-      (delete-file "~/courses/RE7/index.tex")
-      (mapc 'delete-file (directory-files-recursively "~/courses/RE7/notes" ".pdf$"))
-      (mapc 'delete-file (directory-files-recursively "~/courses/RE7/notes" ".tex$")))
+      (delete-file "~/courses/semester-7/RE/index.bbl")
+      (delete-file "~/courses/semester-7/RE/index.pdf")
+      (delete-file "~/courses/semester-7/RE/index.tex")
+      (mapc 'delete-file (directory-files-recursively "~/courses/semester-7/RE/notes" ".pdf$"))
+      (mapc 'delete-file (directory-files-recursively "~/courses/semester-7/RE/notes" ".tex$")))
 #+end_src
 Publishing export
 #+begin_src emacs-lisp
   (setq org-publish-project-alist
         '(("html-notes"
-           :base-directory "~/courses/RE7/"
+           :base-directory "~/courses/semester-7/RE/"
            :exclude "README.org"
            :with-properties t
            :recursive t
            :html-doctype "html5"
-           :publishing-directory "~/courses/RE7/docs"
+           :publishing-directory "~/courses/semester-7/RE/docs"
            :publishing-function org-html-publish-to-html
            :section-numbers 3
            :with-title t
-           :with-toc nil
            :with-latex t
+           :with-toc nil
            :html-head
            "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://gongzhitaao.org/orgcss/org.css\">"
            :html-head-extra
@@ -933,19 +943,20 @@ Publishing export
            "<span class=\"author\">%a</span> / <span class=\"date\">%T</span>"
            :headline-levels 4)
           ("bib-html-copy"
-           :base-directory "~/courses/RE7/"
+           :base-directory "~/courses/semester-7/RE/"
            :base-extension "html"
-           :publishing-directory "~/courses/RE7/docs"
+           :publishing-directory "~/courses/semester-7/RE/docs"
            :publishing-function org-publish-attachment
            :completion-function re-html-publish-cleanup
            )
           ("pdf-notes"
-           :base-directory "~/courses/RE7/"
+           :base-directory "~/courses/semester-7/RE/"
            :exclude "README.org"
            :with-tags nil
+           :with-latex t
            :with-properties nil
            :recursive t
-           :publishing-directory "~/courses/RE7/pdfs"
+           :publishing-directory "~/courses/semester-7/RE/pdfs"
            :publishing-function org-latex-publish-to-pdf
            :completion-function re-latex-publish-cleanup
            :section-numbers 3
@@ -964,11 +975,11 @@ Utility function for making RE note
           (note-title (read-string "Title: ")))
       (progn
         (with-temp-file
-            (expand-file-name (format "%s.org" note-file) "~/courses/RE7/notes/")
+            (expand-file-name (format "%s.org" note-file) "~/courses/semester-7/RE/notes/")
           (insert
            (format "#+TITLE: %s\n#+LATEX_HEADER: \\usepackage{parskip}" note-title)))
         (find-file
-         (expand-file-name (format "%s.org" note-file) "~/courses/RE7/notes/")))))
+         (expand-file-name (format "%s.org" note-file) "~/courses/semester-7/RE/notes/")))))
 #+end_src
 *** Help
 I have a file on my orgfiles which is a document on the keybindings in org. I want to open it quickly.
