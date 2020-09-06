@@ -308,7 +308,8 @@ Setup =swiper= for search
   (use-package swiper
     :ensure t
     :after ivy
-    :bind (("C-s" . swiper)))
+    :bind (("C-s" . swiper)
+           ("C-M-s" . swiper-thing-at-point)))
 #+END_SRC
 *** File Management
 Use =neotree=
@@ -330,21 +331,6 @@ Use =multiple-cursors= behaviour
     (global-set-key (kbd "C->") 'mc/mark-next-like-this)
     (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
     (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
-#+END_SRC
-
-*** Easy Killing
-Use =easy-kill= instead of =kill-ring-save=
-#+BEGIN_SRC emacs-lisp
-  (use-package easy-kill
-    :ensure t
-    :config
-    (global-set-key [remap kill-ring-save] 'easy-kill)
-    (global-set-key [remap mark-sexp] 'easy-mark))
-#+END_SRC
-Browse the kill-ring easily using =browse-kill-ring=
-#+BEGIN_SRC emacs-lisp
-  (use-package browse-kill-ring
-    :ensure t)
 #+END_SRC
 
 *** Window Management
@@ -372,6 +358,37 @@ Which key in a posframe
     :ensure t
     :config
     (which-key-posframe-mode))
+#+end_src
+
+*** Searching
+Engine mode to search for anything and everything
+#+begin_src emacs-lisp
+  (use-package engine-mode
+    :ensure t
+    :config
+    (engine-mode t)
+    (setq engine/browser-funtion 'browse-url-firefox)
+    ;; Engines
+    (defengine google
+      "https://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
+      :keybinding "g"
+      :docstring "Google Search")
+    (defengine wikipedia
+      "https://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
+      :keybinding "w"
+      :docstring "Searchin' the wikis.")
+    (defengine dblp
+      "https://dblp.org/search?q=%s"
+      :keybinding "d"
+      :docstring "Search DBLP")
+    (defengine csbib
+      "https://liinwww.ira.uka.de/csbib/?query=%s"
+      :keybinding "c"
+      :docstring "The collection of Computer Science Bibliographies")
+    (defengine arxiv
+      "https://arxiv.org/search/?query=%s&searchtype=all&source=header"
+      :keybinding "a"
+      :docstring "ArXiv Pre-Prints"))
 #+end_src
 ** God Mode
 God >> evil
@@ -597,7 +614,11 @@ I want alphabetical lists as well
 #+begin_src emacs-lisp
   (setq org-list-allow-alphabetical t)
 #+end_src
-
+I want spellcheck in org mode
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook
+            #'(lambda () (flyspell-mode 1)))
+#+end_src
 *** Org Roam
 =org-roam= is an amazing way to build a concept mapping system and overall org 
 #+BEGIN_SRC emacs-lisp
@@ -830,8 +851,6 @@ Custom agenda view
                    (org-agenda-overriding-header "High-priority unfinished tasks:")))
             (tags "coursework"
                   ((org-agenda-overriding-header "Course Related Items")))
-            (tags "work"
-                  ((org-agenda-overriding-header "Work Related Items")))
             (agenda "" ((org-agenda-span 1)))
             (alltodo ""
                      ((org-agenda-skip-function '(strange-loop/skip-subtree-if-priority ?A))
@@ -901,9 +920,83 @@ Get easy templates back
 BibTex export
 #+begin_src emacs-lisp
   (require 'ox-bibtex)
-  (setq org-latex-pdf-process '("texi2dvi -p -b -V %f"))
+  (setq org-latex-pdf-process '("latexmk -pdf -bibtex %f"))
   (require 'ox-extra)
   (ox-extras-activate '(ignore-headlines))
+#+end_src
+Custom cite links
+#+begin_src emacs-lisp
+  (org-link-set-parameters
+   "citep"
+   :export (lambda (path desc format)
+             (cond
+              ((eq format 'latex)
+               (if (or (not desc) (equal 0 (search "citep:" desc)))
+                   (format "\\citep{%s}" path)
+                 (format "\\citep[%s]{%s}" desc path))))))
+
+  (org-link-set-parameters
+   "citet"
+   :export (lambda (path desc format)
+             (cond
+              ((eq format 'latex)
+               (if (or (not desc) (equal 0 (search "citet:" desc)))
+                   (format "\\citet{%s}" path)
+                 (format "\\citet[%s]{%s}" desc path))))))
+
+  (org-link-set-parameters
+   "citealt"
+   :export (lambda (path desc format)
+             (cond
+              ((eq format 'latex)
+               (if (or (not desc) (equal 0 (search "citealt:" desc)))
+                   (format "\\citealt{%s}" path)
+                 (format "\\citealt[%s]{%s}" desc path))))))
+
+  (org-link-set-parameters
+   "citealp"
+   :export (lambda (path desc format)
+             (cond
+              ((eq format 'latex)
+               (if (or (not desc) (equal 0 (search "citealp:" desc)))
+                   (format "\\citealp{%s}" path)
+                 (format "\\citealp[%s]{%s}" desc path))))))
+
+  (org-link-set-parameters
+   "citealt*"
+   :export (lambda (path desc format)
+             (cond
+              ((eq format 'latex)
+               (if (or (not desc) (equal 0 (search "citealt*:" desc)))
+                   (format "\\citealt*{%s}" path)
+                 (format "\\citealt*[%s]{%s}" desc path))))))
+
+  (org-link-set-parameters
+   "citealp*"
+   :export (lambda (path desc format)
+             (cond
+              ((eq format 'latex)
+               (if (or (not desc) (equal 0 (search "citealp*:" desc)))
+                   (format "\\citealp*{%s}" path)
+                 (format "\\citealp*[%s]{%s}" desc path))))))
+
+  (org-link-set-parameters
+   "citep*"
+   :export (lambda (path desc format)
+             (cond
+              ((eq format 'latex)
+               (if (or (not desc) (equal 0 (search "citep*:" desc)))
+                   (format "\\citep*{%s}" path)
+                 (format "\\citep*[%s]{%s}" desc path))))))
+
+  (org-link-set-parameters
+   "citet*"
+   :export (lambda (path desc format)
+             (cond
+              ((eq format 'latex)
+               (if (or (not desc) (equal 0 (search "citet*:" desc)))
+                   (format "\\citet*{%s}" path)
+                 (format "\\citet*[%s]{%s}" desc path))))))
 #+end_src
 Clean-up functions for RE publish
 #+begin_src emacs-lisp
