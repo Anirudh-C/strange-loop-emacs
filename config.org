@@ -883,9 +883,11 @@ Custom agenda view
                       (org-agenda-overriding-header "All normal priority tasks:")))))
           ("m" "Monthly agenda and all TODOs"
            ((agenda "" ((org-agenda-overriding-header "Monthly Review")
+                        (org-agenda-start-day "+1d")
                         (org-agenda-span 'month)
                         (org-agenda-entry-types '(:deadline))
                         (org-agenda-time-grid nil)
+                        (org-agenda-show-all-dates nil)
                         (org-agenda-skip-function '(strange-loop/org-agenda-skip-tag "repeat" 'nil))))))))
 #+end_src
 Setup captures in org agenda
