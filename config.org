@@ -64,10 +64,6 @@ I don't like the default alert sound of emacs and would like a mode-line flash
     (invert-face 'mode-line)
     (run-with-timer 0.1 nil #'invert-face 'mode-line))
 #+end_src
-Start Emacs clients in full screen
-#+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
-#+end_src
 *** Theme
 I need emacs to look exactly like I want it to, so
 start by removing the default startup buffer
@@ -373,6 +369,10 @@ Engine mode to search for anything and everything
       "https://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
       :keybinding "g"
       :docstring "Google Search")
+    (defengine google-scholar
+      "https://scholar.google.com/scholar?hl=en&as_sdt=0,5&q=%s&btnG="
+      :keybinding "G"
+      :docstring "Google Scholar Search")
     (defengine wikipedia
       "https://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
       :keybinding "w"
@@ -619,6 +619,10 @@ I want spellcheck in org mode
   (add-hook 'org-mode-hook
             #'(lambda () (flyspell-mode 1)))
 #+end_src
+British English is better
+#+begin_src emacs-lisp
+  (setq ispell-dictionary "british")
+#+end_src
 *** Org Roam
 =org-roam= is an amazing way to build a concept mapping system and overall org 
 #+BEGIN_SRC emacs-lisp
@@ -782,15 +786,22 @@ Set org-refile-targets to the agenda files
 **** Keybindings
 Some basic keybindings
 #+BEGIN_SRC emacs-lisp
-  (defun strange-loop/agenda (&optional split)
-    "Visit the org agenda, in the current window or a SPLIT."
+  (defun strange-loop/daily-agenda (&optional split)
+    "Visit the daily org agenda, in the current window or a SPLIT."
     (interactive "P")
     (org-agenda nil "d")
     (when (not split)
       (delete-other-windows)))
+  (defun strange-loop/monthly-agenda (&optional split)
+    "Visit the monthly org agenda, in the current window or a SPLIT."
+    (interactive "P")
+    (org-agenda nil "m")
+    (when (not split)
+      (delete-other-windows)))
   (define-key global-map "\C-cl" 'org-store-link)
   (define-key global-map "\C-ca" 'org-agenda)
-  (define-key global-map "\C-cd" 'strange-loop/agenda)
+  (define-key global-map "\C-cd" 'strange-loop/daily-agenda)
+  (define-key global-map "\C-cm" 'strange-loop/monthly-agenda)
   (define-key global-map "\C-cc" 'org-capture)
 #+END_SRC
 Hitting =C-c C-x C-s= should mark my todo as done and move it to =archive.org=
@@ -841,6 +852,21 @@ Filter =A= priority items from the complete TODO list
       (if (= pri-value pri-current)
           subtree-end
         nil)))
+
+  (defun strange-loop/org-agenda-skip-tag (tag &optional others)
+    "Skip all entries that correspond to TAG.
+  If OTHERS is true, skip all entries that do not correspond to TAG."
+    (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+          (current-headline (or (and (org-at-heading-p)
+                                     (point))
+                                (save-excursion (org-back-to-heading)))))
+      (if others
+          (if (not (member tag (org-get-tags-at current-headline)))
+              next-headline
+            nil)
+        (if (member tag (org-get-tags-at current-headline))
+            next-headline
+          nil))))
 #+end_src
 Custom agenda view
 #+begin_src emacs-lisp
@@ -854,7 +880,13 @@ Custom agenda view
             (agenda "" ((org-agenda-span 1)))
             (alltodo ""
                      ((org-agenda-skip-function '(strange-loop/skip-subtree-if-priority ?A))
-                      (org-agenda-overriding-header "All normal priority tasks:")))))))
+                      (org-agenda-overriding-header "All normal priority tasks:")))))
+          ("m" "Monthly agenda and all TODOs"
+           ((agenda "" ((org-agenda-overriding-header "Monthly Review")
+                        (org-agenda-span 'month)
+                        (org-agenda-entry-types '(:deadline))
+                        (org-agenda-time-grid nil)
+                        (org-agenda-skip-function '(strange-loop/org-agenda-skip-tag "repeat" 'nil))))))))
 #+end_src
 Setup captures in org agenda
 #+begin_src emacs-lisp
@@ -874,7 +906,7 @@ Use =org-noter= to make notes
                     org-noter-notes-search-path '("~/org/notes")
                     org-noter-separate-notes-from-heading t))
 #+END_SRC
-
+Use 
 *** Export
 Allow =babel= to evaluate emacs lisp, python, C, C++, OCaml and gnuplot code
 #+BEGIN_SRC emacs-lisp
@@ -1018,7 +1050,7 @@ Publishing export
   (setq org-publish-project-alist
         '(("html-notes"
            :base-directory "~/courses/semester-7/RE/"
-           :exclude "README.org"
+           :exclude "README.org\\|misc/.*"
            :with-properties t
            :recursive t
            :html-doctype "html5"
@@ -1044,7 +1076,7 @@ Publishing export
            )
           ("pdf-notes"
            :base-directory "~/courses/semester-7/RE/"
-           :exclude "README.org"
+           :exclude "README.org\\|misc/.*"
            :with-tags nil
            :with-latex t
            :with-properties nil
