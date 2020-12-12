@@ -125,42 +125,22 @@ Use =emacs-dracula= cuz it matches the rest of the aesthetic on my system
     (load-theme 'dracula t))
 #+END_SRC
 *** Modeline
-Use =telephone-line=
-#+BEGIN_SRC emacs-lisp
-  (use-package telephone-line
+Use =simple-modeline=
+#+begin_src emacs-lisp
+  (use-package simple-modeline
     :ensure t
     :config
-    ;; Define custom face for modified indicator
-    (defface strange-loop-cyan '((t (:foreground "#62D2DB" :background "#191f26"))) "")
-    ;; Define telephone-line faces
-    (setq telephone-line-faces
-          '((cyan . (strange-loop-cyan . strange-loop-cyan))
-            (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
-            (nil . (mode-line . mode-line-inactive))))
-    ;; Custom Segments
-    (require 'telephone-line-utils)
-    (telephone-line-defsegment telephone-line-god-segment ()
-      (telephone-line-raw (if god-local-mode "<G>")))
-    ;; Left Modules
-    (setq telephone-line-lhs
-          '((cyan . (telephone-line-buffer-modified-segment))
-            (accent . (telephone-line-vc-segment))
-            (nil    . (telephone-line-projectile-buffer-segment))))
-    ;; Right Modules
-    (setq telephone-line-rhs
-          '((nil . (telephone-line-misc-info-segment))
-            (cyan . (telephone-line-god-segment))
-            (accent . (telephone-line-major-mode-segment))))
-    ;; Define the separators
-    (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-        telephone-line-secondary-left-separator 'telephone-line-cubed-left
-        telephone-line-primary-right-separator 'telephone-line-cubed-right
-        telephone-line-secondary-right-separator 'telephone-line-cubed-right)
-    (setq telephone-line-height 24)
-
-    (telephone-line-mode))
-#+END_SRC
-
+    (setq simple-modeline-segments
+          '((simple-modeline-segment-modified
+             simple-modeline-segment-buffer-name
+             simple-modeline-segment-position)
+            (simple-modeline-segment-input-method
+             simple-modeline-segment-vc
+             simple-modeline-segment-misc-info
+             simple-modeline-segment-process
+             simple-modeline-segment-major-mode)))
+    :hook (after-init . simple-modeline-mode))
+#+end_src
 ** User Interface
 Window manager uses Alt as modifier
 #+BEGIN_SRC emacs-lisp
@@ -247,7 +227,9 @@ and =projectile= is for project specific functionality
     :config
     (projectile-mode)
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    (setq projectile-completion-system 'ivy))
+    (setq projectile-completion-system 'helm))
+  (use-package helm-projectile
+    :ensure t)
 #+END_SRC
 I also don't need backup and autosave files because I use git
 #+BEGIN_SRC emacs-lisp
@@ -255,57 +237,48 @@ I also don't need backup and autosave files because I use git
       auto-save-default nil)
 #+END_SRC
 *** Completion
-Use =ivy= for completion
-#+BEGIN_SRC emacs-lisp
-(use-package ivy 
-  :ensure t
-  :diminish (ivy-mode . "")
-  :config
-  (ivy-mode 1)
-  ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
-  (setq ivy-use-virtual-buffers t)
-  ;; number of result lines to display
-  (setq ivy-height 10)
-  ;; does not count candidates
-  (setq ivy-count-format "")
-  ;; no regexp by default
-  (setq ivy-initial-inputs-alist nil)
-  ;; configure regexp engine.
-  (setq ivy-re-builders-alist
-	;; allow input not in order
-        '((t   . ivy--regex-ignore-order))))
-#+END_SRC
+Use =helm= for narrow list compression
+#+begin_src emacs-lisp
+  (use-package helm
+    :ensure t
+    :init
+    (progn
+      (require 'helm-config)
+      (setq helm-candidate-number-limit 100)
+      ;; From https://gist.github.com/antifuchs/9238468
+      (setq helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
+            helm-input-idle-delay 0.01  ; this actually updates things
+                                          ; reeeelatively quickly.
+            helm-yas-display-key-on-candidate t
+            helm-quick-update t
+            helm-M-x-requires-pattern nil
+            helm-ff-skip-boring-files t)
+      (helm-mode))
+    :bind (("M-x" . helm-M-x)
+           ("C-x C-f" . helm-find-files)
+           ("C-x b" . helm-mini)
+           ("C-x c o" . helm-occur)
+           ("M-y" . helm-show-kill-ring)
+           ("C-x r b" . helm-filtered-bookmarks))
+    :config
+    (setq helm-buffers-fuzzy-matching t)
+    (setq helm-autoresize-mode t)
+    (setq helm-buffer-max-length 40)
+    (setq helm-split-window-in-side-p nil))
+#+end_src
+Setup =swiper= for search
+#+begin_src emacs-lisp
+  (use-package swiper-helm
+    :ensure t
+    :config
+    (setq swiper-helm-display-function 'helm-default-display-buffer)
+    (global-set-key (kbd "C-s") 'swiper-helm))
+#+end_src
 Ensure fuzzy search happens using =flx=
 #+BEGIN_SRC emacs-lisp
-  (use-package flx
-    :ensure t)
-#+END_SRC
-Setup =counsel= for additional completion
-#+BEGIN_SRC emacs-lisp
-    (use-package counsel
-      :after ivy
-      :ensure t
-      :config
-      (counsel-mode)
-      (global-set-key (kbd "M-x") 'counsel-M-x)
-      (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-      (global-set-key (kbd "C-x s") 'counsel-git-grep))
-#+END_SRC
-Make the buffer listing more complete using =ivy-rich=
-#+BEGIN_SRC emacs-lisp
-  (use-package ivy-rich
+  (use-package helm-flx
     :ensure t
-    :after ivy
-    :config
-    (ivy-rich-mode))
-#+END_SRC
-Setup =swiper= for search
-#+BEGIN_SRC emacs-lisp
-  (use-package swiper
-    :ensure t
-    :after ivy
-    :bind (("C-s" . swiper)
-           ("C-M-s" . swiper-thing-at-point)))
+    :config (helm-flx-mode 1))
 #+END_SRC
 *** File Management
 Use =neotree=
@@ -623,6 +596,18 @@ British English is better
 #+begin_src emacs-lisp
   (setq ispell-dictionary "british")
 #+end_src
+*** Org Ref
+Citations made easier
+#+begin_src emacs-lisp
+  (use-package org-ref
+    :ensure t
+    :config
+    (setq reftex-default-bibliography "~/org/brain/brain.bib"
+          org-ref-default-bibliography "~/org/brain/brain.bib"
+          org-ref-pdf-directory "~/org/brain-pdfs/refs/"
+          bibtex-completion-bibliography "~/org/brain/brain.bib"))
+
+#+end_src
 *** Org Roam
 =org-roam= is an amazing way to build a concept mapping system and overall org 
 #+BEGIN_SRC emacs-lisp
@@ -632,6 +617,13 @@ British English is better
     (after-init . org-roam-mode)
     :custom
     (org-roam-directory "~/org/brain")
+    (org-roam-index-file "~/org/brain/root.org")
+    (org-roam-capture-templates '(
+                                  ("d" "default" plain (function org-roam--capture-get-point)
+                                   "%?"
+                                   :file-name "%<%Y%m%d%H%M%S>-${slug}"
+                                   :head "#+TITLE: ${title}\n#+LATEX_HEADER: \\usepackage{parskip}\n"
+                                   :unnarrowed t)))
     :bind (:map org-roam-mode-map
                 (("C-c n l" . org-roam)
                  ("C-c n f" . org-roam-find-file)
@@ -654,6 +646,27 @@ Use =deft= to read/filter the notes and setup =el-patch= to handle the titles
     (deft-default-extension "org")
     (deft-directory "~/org/brain"))
 #+END_SRC
+Use =org-roam-server= to visualise stuff
+#+begin_src emacs-lisp
+  (use-package org-roam-server
+    :ensure t
+    :config
+    (setq org-roam-server-host "127.0.0.1"
+          org-roam-server-port 8080
+          org-roam-server-authenticate nil
+          org-roam-server-export-inline-images t
+          org-roam-server-serve-files nil
+          org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+          org-roam-server-network-poll t
+          org-roam-server-network-arrows nil
+          org-roam-server-network-label-truncate t
+          org-roam-server-network-label-truncate-length 60
+          org-roam-server-network-label-wrap-length 20))
+#+end_src
+=org-roam-protocol= to open files
+#+begin_src emacs-lisp
+  (require 'org-roam-protocol)
+#+end_src
 
 *** Tasks and Org-Capture
 **** Basic Setup
@@ -1032,6 +1045,7 @@ Custom cite links
                    (format "\\citet*{%s}" path)
                  (format "\\citet*[%s]{%s}" desc path))))))
 #+end_src
+*** Org Publish
 Clean-up functions for RE publish
 #+begin_src emacs-lisp
     (defun re-html-publish-cleanup (props)
@@ -1046,6 +1060,14 @@ Clean-up functions for RE publish
       (delete-file "~/courses/semester-7/RE/index.tex")
       (mapc 'delete-file (directory-files-recursively "~/courses/semester-7/RE/notes" ".pdf$"))
       (mapc 'delete-file (directory-files-recursively "~/courses/semester-7/RE/notes" ".tex$")))
+#+end_src
+Clean-up functions for brain publishing
+#+begin_src emacs-lisp
+  (defun brain-latex-cleanup (props)
+    "Remove all unnecessary files after publishing brain"
+    (mapc 'delete-file (directory-files-recursively "~/org/brain" ".pdf$"))
+    (mapc 'delete-file (directory-files-recursively "~/org/brain" ".tex$"))
+    (mapc 'delete-file (directory-files-recursively "~/org/brain" ".bbl$")))
 #+end_src
 Publishing export
 #+begin_src emacs-lisp

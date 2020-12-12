@@ -9,10 +9,11 @@
  '(deft-use-filter-string-for-filename t t)
  '(ivy-mode t)
  '(ivy-virtual-abbreviate (quote full))
+ '(org-agenda-files (quote ("~/.emacs.d/config.org" "~/org/index.org")))
  '(org-roam-directory "~/org/brain")
  '(package-selected-packages
    (quote
-    (engine-mode which-key-posframe which-key org-pomodoro org-plus-contrib elpy deft el-patch org-noter org-roam org-bullets nov pdf-tools cider clojure-mode elm-mode rjsx-mode json-mode impatient-mode htmlize simple-httpd company-web web-mode emmet-mode rainbow-mode markdown-mode god-mode ace-window browse-kill-ring easy-kill multiple-cursors neotree ivy-rich counsel flx ivy projectile magit undo-tree restart-emacs try telephone-line dracula-theme rainbow-delimiters use-package)))
+    (org-ref helm-projectile swiper-helm helm-flx helm simple-modeline doom-modeline org-roam-server engine-mode which-key-posframe which-key org-pomodoro org-plus-contrib elpy deft el-patch org-noter org-roam org-bullets nov pdf-tools cider clojure-mode elm-mode rjsx-mode json-mode impatient-mode htmlize simple-httpd company-web web-mode emmet-mode rainbow-mode markdown-mode god-mode ace-window browse-kill-ring easy-kill multiple-cursors neotree ivy-rich counsel flx ivy projectile magit undo-tree restart-emacs try telephone-line dracula-theme rainbow-delimiters use-package)))
  '(send-mail-function (quote mailclient-send-it))
  '(which-key-posframe-mode t))
 (custom-set-faces
