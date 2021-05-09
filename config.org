@@ -489,7 +489,7 @@ Edit =json= nicely
     :defer t
     :mode (("\\.js\\'" . rjsx-mode))
     :config
-    (setq-default rjsx-indent-level 2))
+    (setq-default rjsx-indent-level 4))
 #+END_SRC
 =elm-mode=
 #+BEGIN_SRC emacs-lisp
@@ -526,6 +526,23 @@ Install and configure =pdf-tools=
   (setq-default pdf-view-display-size 'fit-width))
 #+END_SRC
 
+*** Latex
+Install =auctex=
+#+begin_src emacs-lisp
+  (use-package auctex
+    :ensure t
+    :defer t)
+  (with-eval-after-load "latex"
+    (add-to-list
+     'TeX-command-list
+     '("Docker compile"
+       "docker run --rm -i -u $(id -u):$(id -g) -v \"$PWD\":/usr/src/app -w /usr/src/app texlive/texlive latexmk -pdf %s"
+       TeX-run-command
+       nil
+       t
+       :help "Compile latex using Docker"
+       )))
+#+end_src
 *** Ebooks
 Use =nov.el= to open ebooks
 #+BEGIN_SRC emacs-lisp
@@ -967,9 +984,13 @@ Get easy templates back
 BibTex export
 #+begin_src emacs-lisp
   (require 'ox-bibtex)
-  (setq org-latex-pdf-process '("latexmk -pdf -bibtex %f"))
   (require 'ox-extra)
   (ox-extras-activate '(ignore-headlines))
+#+end_src
+Use docker to run latex export
+#+begin_src emacs-lisp
+  (setq org-latex-pdf-process
+        '("docker run --rm -i -u $(id -u):$(id -g) -v \"$PWD\":/usr/src/app -w /usr/src/app texlive/texlive latexmk -pdf %b"))
 #+end_src
 Custom cite links
 #+begin_src emacs-lisp
