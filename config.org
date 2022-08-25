@@ -6,7 +6,6 @@ Load =package.el=
 #+END_SRC
 Add common package archives
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
 #+END_SRC
@@ -18,15 +17,19 @@ Ensure that packages aren't loaded again after processing the init file
 #+BEGIN_SRC emacs-lisp
   (setq package-enable-at-startup nil)
 #+END_SRC
-Initialize the package installation
-#+BEGIN_SRC emacs-lisp
-(package-initialize)
-#+END_SRC
 Customize puts a lot of stuff into my =init.el=
 #+BEGIN_SRC emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 #+END_SRC
+** Setup =quelpa=
+#+begin_src emacs-lisp
+  (unless (package-installed-p 'quelpa)
+    (with-temp-buffer
+      (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+      (eval-buffer)
+      (quelpa-self-upgrade)))
+#+end_src
 
 ** Configure =use-package=
 Install =use-package= if not installed
@@ -41,10 +44,19 @@ Load =use-package= while compiling
   (require 'use-package))
 #+END_SRC
 
+Install =quelpa-use-package=
+#+begin_src emacs-lisp
+  (quelpa
+   '(quelpa-use-package
+     :fetcher git
+     :url "https://github.com/quelpa/quelpa-use-package.git"))
+  (require 'quelpa-use-package)
+#+end_src
+
 ** Tell Emacs who I am
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Anirudh C"
-      user-mail-address "anirudh.c@iiitb.org")
+      user-mail-address "anirudh.c@iiitb.ac.in")
 #+END_SRC
 
 ** Cosmetics
@@ -78,7 +90,7 @@ Also remove the scrollbar, menubar and toolbar
 (tool-bar-mode -1)
 (when (boundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
-#+END_SRC 
+#+END_SRC
 When I use emacs I deal with a lot of parentheses, I want emacs
 to match them for me and do it colourfully using =rainbow-delimiters=
 #+BEGIN_SRC emacs-lisp
@@ -111,45 +123,26 @@ I don't like trailing whitespaces as it messes so many things up
     (interactive)
     (setq show-trailing-whitespace t))
   (add-hook 'prog-mode-hook 'strange-loop/buf-show-trailing-whitespace)
-#+END_SRC 
-Use =Iosevka= font
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'default-frame-alist
-               '(font . "Iosevka-13"))
 #+END_SRC
-Use =emacs-dracula= cuz it matches the rest of the aesthetic on my system
-#+BEGIN_SRC emacs-lisp
-  (use-package dracula-theme
-    :ensure t
-    :config
-    (load-theme 'dracula t))
-#+END_SRC
-*** Modeline
-Use =simple-modeline=
+*** Nano Emacs
+Load =nano-dark=
 #+begin_src emacs-lisp
-  (use-package simple-modeline
-    :ensure t
-    :config
-    (setq simple-modeline-segments
-          '((simple-modeline-segment-modified
-             simple-modeline-segment-buffer-name
-             simple-modeline-segment-position)
-            (simple-modeline-segment-input-method
-             simple-modeline-segment-vc
-             simple-modeline-segment-misc-info
-             simple-modeline-segment-process
-             simple-modeline-segment-major-mode)))
-    :hook (after-init . simple-modeline-mode))
+  (quelpa '(nano-emacs
+            :fetcher github
+            :repo "rougier/nano-emacs"))
+
+  (require 'nano)
+
+  (set-face-attribute 'mode-line-inactive nil :underline "#434C5E" :foreground "#2E3440")
+  (set-face-attribute 'mode-line nil :underline "#434C5E" :foreground "#2E3440")
+  (add-hook 'echo-area-clear-hook 'nano-theme--minibuffer)
+  (set-face-attribute 'nano-face-strong nil :weight 'medium)
 #+end_src
+
 ** User Interface
 Window manager uses Alt as modifier
 #+BEGIN_SRC emacs-lisp
 (setq x-super-keysym 'meta)
-#+END_SRC
-Would be fun to =try= out packages
-#+BEGIN_SRC emacs-lisp
-  (use-package try
-    :ensure t)
 #+END_SRC
 Also I need to be able to edit my config in emacs and =restart-emacs=
 in emacs
@@ -329,59 +322,6 @@ Which key in a posframe
     (which-key-posframe-mode))
 #+end_src
 
-*** Searching
-Engine mode to search for anything and everything
-#+begin_src emacs-lisp
-  (use-package engine-mode
-    :ensure t
-    :config
-    (engine-mode t)
-    (setq engine/browser-funtion 'browse-url-firefox)
-    ;; Engines
-    (defengine google
-      "https://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
-      :keybinding "g"
-      :docstring "Google Search")
-    (defengine google-scholar
-      "https://scholar.google.com/scholar?hl=en&as_sdt=0,5&q=%s&btnG="
-      :keybinding "G"
-      :docstring "Google Scholar Search")
-    (defengine wikipedia
-      "https://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
-      :keybinding "w"
-      :docstring "Searchin' the wikis.")
-    (defengine dblp
-      "https://dblp.org/search?q=%s"
-      :keybinding "d"
-      :docstring "Search DBLP")
-    (defengine csbib
-      "https://liinwww.ira.uka.de/csbib/?query=%s"
-      :keybinding "c"
-      :docstring "The collection of Computer Science Bibliographies")
-    (defengine arxiv
-      "https://arxiv.org/search/?query=%s&searchtype=all&source=header"
-      :keybinding "a"
-      :docstring "ArXiv Pre-Prints"))
-#+end_src
-** God Mode
-God >> evil
-#+BEGIN_SRC emacs-lisp
-  (defun strange-loop/update-cursor ()
-    "Hook for updating the cursor to indicate God-mode"
-    (setq cursor-type (if (or god-local-mode buffer-read-only)
-                          'hollow
-                        'box)))
-  (use-package god-mode
-    :ensure t
-    :config
-    (global-set-key (kbd "<escape>") 'god-local-mode)
-    (add-hook 'god-mode-enabled-hook 'strange-loop/update-cursor)
-    (add-hook 'god-mode-disabled-hook 'strange-loop/update-cursor)
-    (global-set-key (kbd "C-x C-2") 'split-window-below)
-    (global-set-key (kbd "C-x C-3") 'split-window-right)
-    (define-key god-local-mode-map (kbd ".") 'repeat))
-#+END_SRC
-
 ** Environments
 *** Markdown
 Highlighting using =markdown-mode=
@@ -397,125 +337,6 @@ Highlighting using =markdown-mode=
   :init (setq markdown-command "multimarkdown"))
 #+END_SRC
 
-*** Web
-Install some dependencies (=rainbow-mode= for colors, =css-mode= for css highlighting)
-#+BEGIN_SRC emacs-lisp
-;; Understand css
-(use-package rainbow-mode
-  :ensure t)
-(use-package css-mode
-  :ensure t
-  :config
-  ;; hook to get colors in css
-  (add-hook 'css-mode-hook (lambda ()
-(rainbow-mode))))
-#+END_SRC
-Install =web-mode= and =emmet-mode=
-#+BEGIN_SRC emacs-lisp
-  (use-package emmet-mode
-    :ensure t
-    :commands emmet-mode)
-
-  (use-package web-mode
-    :ensure t
-    :defer t
-    :config
-    ;; Indent all my web mode code by 2 instead of 4
-    (setq web-mode-attr-indent-offset 2)
-    (setq web-mode-code-indent-offset 2)
-    (setq web-mode-css-indent-offset 2)
-    (setq web-mode-indent-style 2)
-    (setq web-mode-markup-indent-offset 2)
-    (setq web-mode-sql-indent-offset 2)
-    ;; Highlight columns
-    (setq web-mode-enable-current-column-highlight t)
-    (setq web-mode-enable-current-element-highlight t))
-#+END_SRC
-Load =web-mode= in the specific files
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
-#+END_SRC
-Add completion vocabulary to css and html when in =web-mode=
-#+BEGIN_SRC emacs-lisp
-  (use-package company-web
-    :ensure t
-    :after company
-    :config
-    (add-hook 'web-mode-hook (lambda ()
-                               (set (make-local-variable 'company-backends) '(company-css company-web-html company-files)))))
-#+END_SRC
-Enable =emmet-mode= in =web-mode=
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'web-mode-hook 'emmet-mode)
-#+END_SRC
-For =emmet-mode= to switch between html and css in the same document
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'web-mode-before-auto-complete-hooks
-            '(lambda ()
-               (let ((web-mode-cur-lang
-                      (web-mode-language-at-pos)))
-                 (if (string= web-mode-cur-lang "css")
-                     (setq emmet-use-css-transform t)
-                   (setq emmet-use-css-transform nil)))))
-#+END_SRC
-Setup =impatient-mode=
-Dependencies (=simple-httpd= to start http server and =htmlize= for additional functionality)
-#+BEGIN_SRC emacs-lisp
-(use-package simple-httpd
-  :ensure t)
-(use-package htmlize
-  :ensure t)
-#+END_SRC
-=impatient-mode=
-#+BEGIN_SRC emacs-lisp
-(use-package impatient-mode
-  :ensure t)
-#+END_SRC
-**** Javascript
-Edit =json= nicely
-#+BEGIN_SRC emacs-lisp
-  (use-package json-mode
-    :ensure t
-    :defer t
-    :config
-  (setq js-indent-level 2))
-#+END_SRC
-=JSX= and =React=
-#+BEGIN_SRC emacs-lisp
-  (use-package rjsx-mode
-    :ensure t
-    :defer t
-    :mode (("\\.js\\'" . rjsx-mode))
-    :config
-    (setq-default rjsx-indent-level 4))
-#+END_SRC
-=elm-mode=
-#+BEGIN_SRC emacs-lisp
-(use-package elm-mode
-  :ensure t
-  :defer t
-  :config
-  (add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
-  (defun company/elm-mode-hook ()
-    (add-to-list 'company-backends 'company-elm))
-  (add-hook 'elm-mode-hook 'company/elm-mode-hook)
-(custom-set-variables '(elm-format-on-save t)))
-#+END_SRC
-
-*** Clojure
-Install =clojure-mode=
-#+BEGIN_SRC emacs-lisp
-(use-package clojure-mode
-  :ensure t)
-#+END_SRC
-Install =cider= for REPL interaction
-#+BEGIN_SRC emacs-lisp
-(use-package cider
-  :ensure t)
-#+END_SRC
-
 *** PDF
 Install and configure =pdf-tools=
 #+BEGIN_SRC emacs-lisp
@@ -525,7 +346,25 @@ Install and configure =pdf-tools=
   (pdf-tools-install)
   (setq-default pdf-view-display-size 'fit-width))
 #+END_SRC
+Allow scrolling the PDF side-by-side with source code
+#+begin_src emacs-lisp
+  (defun strange-loop/pdfview-scroll-down ()
+    "Scroll pdf-view buffer down as other window."
+    (interactive)
+    (other-window 1)
+    (pdf-view-scroll-down-or-previous-page)
+    (other-window 1))
 
+  (defun strange-loop/pdfview-scroll-up ()
+    "Scroll pdf-view buffer up as other window."
+    (interactive)
+    (other-window 1)
+    (pdf-view-scroll-up-or-next-page)
+    (other-window 1))
+
+  (global-set-key (kbd "C-M-n") 'strange-loop/pdfview-scroll-up)
+  (global-set-key (kbd "C-M-p") 'strange-loop/pdfview-scroll-down)
+#+end_src
 *** Latex
 Install =auctex=
 #+begin_src emacs-lisp
@@ -533,50 +372,125 @@ Install =auctex=
     :ensure t
     :defer t)
   (with-eval-after-load "latex"
-    (add-to-list
-     'TeX-command-list
-     '("Docker compile"
-       "docker run --rm -i -u $(id -u):$(id -g) -v \"$PWD\":/usr/src/app -w /usr/src/app texlive/texlive latexmk -pdf %s"
-       TeX-run-command
-       nil
-       t
-       :help "Compile latex using Docker"
-       )))
-#+end_src
-*** Ebooks
-Use =nov.el= to open ebooks
-#+BEGIN_SRC emacs-lisp
-  (use-package nov
-    :ensure t
-    :config
-    (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
-#+END_SRC
+    (progn
+      (add-to-list
+       'TeX-command-list
+       '("Docker compile"
+         "docker run --rm -i -u $(id -u):$(id -g) -v \"$PWD\":/usr/src/app -w /usr/src/app texlive/texlive latexmk -pdf %s"
+         TeX-run-command
+         nil
+         t
+         :help "Compile latex using Docker"
+         ))
+      (add-to-list
+       'TeX-command-list
+       '("Make compile"
+         "make all"
+         TeX-run-command
+         nil
+         t
+         :help "Compile latex using Makefile"
+         ))
+      (setq TeX-command-default "Docker compile")))
 
+
+#+end_src
 *** Python
 Install =elpy=
 #+BEGIN_SRC emacs-lisp
   (use-package elpy
     :ensure t
     :init
-    (elpy-enable))
+    (elpy-enable)
+    (setq elpy-rpc-python-command "python3.7"))
 #+END_SRC
 Line numbers in python files
 #+begin_src emacs-lisp
   (add-hook 'python-mode-hook 'linum-mode)
 #+end_src
-*** Drawing
-Install =artist-mode=
-#+BEGIN_SRC emacs-lisp
-  (require 'artist)
-#+END_SRC
-
-** Org Mode
-Install org-plus-contrib
+*** RSS
+Use =elfeed=
 #+begin_src emacs-lisp
-  (use-package org
-    :ensure org-plus-contrib)
-#+end_src
+  (defun concatenate-authors (authors-list)
+    "Given AUTHORS-LIST, list of plists; return string of all authors
+  concatenated."
+    (mapconcat
+     (lambda (author) (plist-get author :name))
+     authors-list ", "))
 
+  (defun my-search-print-fn (entry)
+    "Print ENTRY to the buffer."
+    (let* ((date (elfeed-search-format-date (elfeed-entry-date entry)))
+           (title (or (elfeed-meta entry :title)
+                      (elfeed-entry-title entry) ""))
+           (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
+           (feed (elfeed-entry-feed entry))
+           (feed-title
+            (when feed
+              (or (elfeed-meta feed :title) (elfeed-feed-title feed))))
+           (entry-authors (concatenate-authors
+                           (elfeed-meta entry :authors)))
+           (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
+           (tags-str (mapconcat
+                      (lambda (s) (propertize s 'face
+                                              'elfeed-search-tag-face))
+                      tags ","))
+           (title-width (- (window-width) 10
+                           elfeed-search-trailing-width))
+           (title-column (elfeed-format-column
+                          title (elfeed-clamp
+                                 elfeed-search-title-min-width
+                                 title-width
+                                 elfeed-search-title-max-width)
+                          :left))
+           (authors-width 135)
+           (authors-column (elfeed-format-column
+                            entry-authors (elfeed-clamp
+                                           elfeed-search-title-min-width
+                                           authors-width
+                                           80)
+                            :left)))
+
+      (insert (propertize date 'face 'elfeed-search-date-face) " ")
+
+      (insert (propertize title-column
+                          'face title-faces 'kbd-help title) " ")
+
+      (insert (propertize authors-column
+                          'face 'elfeed-search-date-face
+                          'kbd-help entry-authors) " ")
+
+      ;; (when feed-title
+        ;; (insert (propertize entry-authors
+                            ;; 'face 'elfeed-search-feed-face) " "))
+      ;; (when entry-authors
+      ;;   (insert (propertize feed-title
+      ;;                       'face 'elfeed-search-feed-face) " "))
+      (when tags
+        (insert "(" tags-str ")"))))
+
+  (use-package elfeed
+    :ensure t
+    :config
+    (global-set-key (kbd "C-x w") 'elfeed)
+    (setq elfeed-feeds
+          '("http://eprint.iacr.org/rss/rss.xml"))
+    (setq-default elfeed-search-filter "@1-week-ago")
+    (setq elfeed-search-print-entry-function #'my-search-print-fn))
+
+  (use-package elfeed-score
+    :ensure t
+    :config
+    (progn
+      (elfeed-score-enable)
+      (define-key elfeed-search-mode-map "=" elfeed-score-map)))
+#+end_src
+** Org Mode
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    :ensure t
+    :pin gnu)
+#+END_SRC
 *** Display
 How I want org-mode to look
 #+BEGIN_SRC emacs-lisp
@@ -626,29 +540,29 @@ Citations made easier
 
 #+end_src
 *** Org Roam
-=org-roam= is an amazing way to build a concept mapping system and overall org 
+=org-roam= is an amazing way to build a concept mapping system and overall org
 #+BEGIN_SRC emacs-lisp
-  (use-package org-roam
-    :ensure t
-    :hook
-    (after-init . org-roam-mode)
-    :custom
-    (org-roam-directory "~/org/brain")
-    (org-roam-index-file "~/org/brain/root.org")
-    (org-roam-capture-templates '(
-                                  ("d" "default" plain (function org-roam--capture-get-point)
-                                   "%?"
-                                   :file-name "%<%Y%m%d%H%M%S>-${slug}"
-                                   :head "#+TITLE: ${title}\n#+LATEX_HEADER: \\usepackage{parskip}\n"
-                                   :unnarrowed t)))
-    :bind (:map org-roam-mode-map
-                (("C-c n l" . org-roam)
-                 ("C-c n f" . org-roam-find-file)
-                 ("C-c n j" . org-roam-jump-to-index)
-                 ("C-c n b" . org-roam-switch-to-buffer)
-                 ("C-c n g" . org-roam-graph))
-                :map org-mode-map
-                (("C-c n i" . org-roam-insert))))
+  ;; (use-package org-roam
+  ;;   :ensure t
+  ;;   :hook
+  ;;   (after-init . org-roam-mode)
+  ;;   :custom
+  ;;   (org-roam-directory "~/org/brain")
+  ;;   (org-roam-index-file "~/org/brain/root.org")
+  ;;   (org-roam-capture-templates '(
+  ;;                                 ("d" "default" plain (function org-roam--capture-get-point)
+  ;;                                  "%?"
+  ;;                                  :file-name "%<%Y%m%d%H%M%S>-${slug}"
+  ;;                                  :head "#+TITLE: ${title}\n#+LATEX_HEADER: \\usepackage{parskip}\n"
+  ;;                                  :unnarrowed t)))
+  ;;   :bind (:map org-roam-mode-map
+  ;;               (("C-c n l" . org-roam)
+  ;;                ("C-c n f" . org-roam-find-file)
+  ;;                ("C-c n j" . org-roam-jump-to-index)
+  ;;                ("C-c n b" . org-roam-switch-to-buffer)
+  ;;                ("C-c n g" . org-roam-graph))
+  ;;               :map org-mode-map
+  ;;               (("C-c n i" . org-roam-insert))))
 #+END_SRC
 Use =deft= to read/filter the notes and setup =el-patch= to handle the titles
 #+BEGIN_SRC emacs-lisp
@@ -663,27 +577,6 @@ Use =deft= to read/filter the notes and setup =el-patch= to handle the titles
     (deft-default-extension "org")
     (deft-directory "~/org/brain"))
 #+END_SRC
-Use =org-roam-server= to visualise stuff
-#+begin_src emacs-lisp
-  (use-package org-roam-server
-    :ensure t
-    :config
-    (setq org-roam-server-host "127.0.0.1"
-          org-roam-server-port 8080
-          org-roam-server-authenticate nil
-          org-roam-server-export-inline-images t
-          org-roam-server-serve-files nil
-          org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
-          org-roam-server-network-poll t
-          org-roam-server-network-arrows nil
-          org-roam-server-network-label-truncate t
-          org-roam-server-network-label-truncate-length 60
-          org-roam-server-network-label-wrap-length 20))
-#+end_src
-=org-roam-protocol= to open files
-#+begin_src emacs-lisp
-  (require 'org-roam-protocol)
-#+end_src
 
 *** Tasks and Org-Capture
 **** Basic Setup
@@ -729,57 +622,6 @@ I want to know when I did these tasks as well
 #+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
 #+END_SRC
-**** Pomodoro
-Notification callback using =zenity= for pomodoro timer
-#+begin_src emacs-lisp
-  (defun strange-loop/notify (text)
-    "Callback to zenity to create notification"
-    (call-process "zenity"
-                  nil t nil
-                  "--notification"
-                  "--window-icon=info"
-                  (concat "--text=\"" text "\"")))
-#+end_src
-Get =org-pomodoro= for that sweet efficiency
-#+begin_src emacs-lisp
-  (use-package org-pomodoro
-    :ensure t)
-
-  (setq org-pomodoro-length 25
-        org-pomodoro-short-break-length 5
-        org-pomodoro-long-break-length 20
-        org-pomodoro-play-sounds t
-        org-pomodoro-start-sound-p t
-        org-pomodoro-finished-sound-p t
-        org-pomodoro-short-break-sound-p t
-        org-pomodoro-long-break-sound-p t
-        org-pomodoro-audio-player
-        "/usr/bin/vlc -Idummy --play-and-exit")
-
-  (setq org-pomodoro-start-sound
-        (expand-file-name "/usr/share/sounds/Pop/stereo/notification/theme-demo.oga")
-        org-pomodoro-finished-sound
-        (expand-file-name "/usr/share/sounds/Pop/stereo/notification/complete.oga")
-        org-pomodoro-short-break-sound
-        (expand-file-name "/usr/share/sounds/Pop/stereo/action/bell.oga")
-        org-pomodoro-long-break-sound
-        (expand-file-name "/usr/share/sounds/Pop/stereo/action/bell.oga"))
-
-  (global-set-key (kbd "M-p") 'org-pomodoro)
-
-  (add-hook 'org-pomodoro-started-hook
-            (lambda ()
-              (strange-loop/notify (format "%s started! Focus.." org-clock-heading))))
-
-  (add-hook 'org-pomodoro-finished-hook
-            (lambda ()
-              (strange-loop/notify (format "Time for a break from %s" org-clock-heading))))
-
-  (add-hook 'org-pomodoro-break-finished-hook
-            (lambda ()
-              (interactive)
-              (org-pomodoro)))
-#+end_src
 **** Capture Templates
 - Todo template
   #+BEGIN_SRC emacs-lisp
@@ -788,26 +630,12 @@ Get =org-pomodoro= for that sweet efficiency
                                           (file org-index-file)
                                           "* TODO %^{Todo} %^G \nSCHEDULED: %^{Schedule}T DEADLINE: %^{Deadline}T \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")))
   #+END_SRC
-- Books template
-  #+BEGIN_SRC emacs-lisp
-    (add-to-list 'org-capture-templates '("B" "Books"
-                                          entry
-                                          (file "books.org")
-                                          "* BOOK %^{Title} %^g \n:PROPERTIES:\n:CREATED: %U\n:AUTHOR: %^{Author} \n:FILENAME: %^{Filename} \n:END:\n%?"))
-  #+END_SRC
 - Journal template
   #+BEGIN_SRC emacs-lisp
     (add-to-list 'org-capture-templates '("j" "Journal Entry"
                                           entry
                                           (file+olp+datetree org-journal-file)
                                           "** %U %^{Title}\n%?"))
-  #+END_SRC
-- Papers template
-  #+BEGIN_SRC emacs-lisp
-    (add-to-list 'org-capture-templates '("P" "Paper"
-                                          entry
-                                          (file "papers.org")
-                                          "* PAPER %^{Title} %^g \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n** Authors\n%^{Authors}\n** Location\n%?"))
   #+END_SRC
 Set org-refile-targets to the agenda files
 #+BEGIN_SRC emacs-lisp
@@ -847,27 +675,13 @@ I want to open my index file using =C-c i=
   (end-of-buffer))
 (global-set-key (kbd "C-c i") 'strange-loop/open-index)
 #+END_SRC
-I want to open the books database using =C-c b=
-#+BEGIN_SRC emacs-lisp
-(defun strange-loop/open-book ()
-  "Open the books database."
-  (interactive)
-  (find-file "~/org/books.org")
-  (end-of-buffer))
-(global-set-key (kbd "C-c b") 'strange-loop/open-book)
-#+END_SRC
 I want to open my journal using =C-c j= and switch using =C-x j=
 #+BEGIN_SRC emacs-lisp
   (defun strange-loop/open-journal ()
     "Output the journal"
     (interactive)
-    (message org-journal-file))
-  (defun strange-loop/switch-journal ()
-    "Switch between journals located at ~/org/journals"
-    (interactive)
-    (setq org-journal-file (read-file-name "Journal: " "~/org/journals/")))
+    (find-file "~/org/journals/journal.org"))
   (global-set-key (kbd "C-c j") 'strange-loop/open-journal)
-  (global-set-key (kbd "C-x j") 'strange-loop/switch-journal)
 #+END_SRC
 *** Org Agenda
 Filter =A= priority items from the complete TODO list
@@ -920,10 +734,6 @@ Custom agenda view
                         (org-agenda-show-all-dates nil)
                         (org-agenda-skip-function '(strange-loop/org-agenda-skip-tag "repeat" 'nil))))))))
 #+end_src
-Setup captures in org agenda
-#+begin_src emacs-lisp
-  (define-key org-agenda-mode-map "c" 'org-capture)
-#+end_src
 We want sticky agendas
 #+begin_src emacs-lisp
   (setq org-agenda-sticky t)
@@ -938,7 +748,7 @@ Use =org-noter= to make notes
                     org-noter-notes-search-path '("~/org/notes")
                     org-noter-separate-notes-from-heading t))
 #+END_SRC
-Use 
+Use
 *** Export
 Allow =babel= to evaluate emacs lisp, python, C, C++, OCaml and gnuplot code
 #+BEGIN_SRC emacs-lisp
@@ -981,12 +791,6 @@ Get easy templates back
 
   (require 'org-tempo)
 #+END_SRC
-BibTex export
-#+begin_src emacs-lisp
-  (require 'ox-bibtex)
-  (require 'ox-extra)
-  (ox-extras-activate '(ignore-headlines))
-#+end_src
 Use docker to run latex export
 #+begin_src emacs-lisp
   (setq org-latex-pdf-process
