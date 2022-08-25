@@ -131,7 +131,16 @@ Load =nano-dark=
             :fetcher github
             :repo "rougier/nano-emacs"))
 
-  (require 'nano)
+  (require 'nano-theme-dark)
+
+  (require 'nano-faces)
+  (nano-faces)
+
+  (require 'nano-theme)
+  (nano-theme)
+
+  ;; Nano header & mode lines
+  (require 'nano-modeline)
 
   (set-face-attribute 'mode-line-inactive nil :underline "#434C5E" :foreground "#2E3440")
   (set-face-attribute 'mode-line nil :underline "#434C5E" :foreground "#2E3440")
@@ -192,7 +201,8 @@ Undoing and redoing using =undo-tree= only
   (use-package undo-tree
     :ensure t
     :config
-    (global-undo-tree-mode))
+    (global-undo-tree-mode)
+    (setq undo-tree-auto-save-history nil))
 #+END_SRC
 Make redo the redo of undo-tree
 #+BEGIN_SRC emacs-lisp
