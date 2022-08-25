@@ -6,9 +6,8 @@
  '(ivy-mode t)
  '(ivy-virtual-abbreviate 'full)
  '(org-agenda-files '("~/.emacs.d/config.org" "~/org/index.org"))
- '(org-roam-directory "~/org/brain")
  '(package-selected-packages
-   '(orgalist org mini-frame nano-emacs lambda-line lambda-themes quelpa-use-package quelpa org-contrib elfeed-score elfeed solo-jazz-theme epc auctex org-ref helm-projectile swiper-helm helm-flx helm simple-modeline doom-modeline org-roam-server engine-mode which-key-posframe which-key org-pomodoro org-plus-contrib elpy deft el-patch org-noter org-roam org-bullets nov pdf-tools cider clojure-mode elm-mode rjsx-mode json-mode impatient-mode htmlize simple-httpd company-web web-mode emmet-mode rainbow-mode markdown-mode god-mode ace-window browse-kill-ring easy-kill multiple-cursors neotree ivy-rich counsel flx ivy projectile magit undo-tree restart-emacs try telephone-line dracula-theme rainbow-delimiters use-package))
+   '(helm-bibtex org-roam-ui websocket orgalist org mini-frame nano-emacs lambda-line lambda-themes quelpa-use-package quelpa org-contrib elfeed-score elfeed solo-jazz-theme epc auctex org-ref helm-projectile swiper-helm helm-flx helm simple-modeline doom-modeline org-roam-server engine-mode which-key-posframe which-key org-pomodoro org-plus-contrib elpy deft el-patch org-noter org-roam org-bullets nov pdf-tools cider clojure-mode elm-mode rjsx-mode json-mode impatient-mode htmlize simple-httpd company-web web-mode emmet-mode rainbow-mode markdown-mode god-mode ace-window browse-kill-ring easy-kill multiple-cursors neotree ivy-rich counsel flx ivy projectile magit undo-tree restart-emacs try telephone-line dracula-theme rainbow-delimiters use-package))
  '(send-mail-function 'mailclient-send-it)
  '(which-key-posframe-mode t))
 (custom-set-faces

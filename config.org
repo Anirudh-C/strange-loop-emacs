@@ -283,6 +283,17 @@ Ensure fuzzy search happens using =flx=
     :ensure t
     :config (helm-flx-mode 1))
 #+END_SRC
+Use =helm-bibtex=
+#+begin_src emacs-lisp
+  (use-package helm-bibtex
+    :ensure t
+    :config
+    (setq bibtex-completion-bibliography "~/org/papers.bib"
+          bibtex-completion-library-path "~/org/papers/"
+          bibtex-completion-pdf-field "File")
+    :bind
+    (("C-c n B" . helm-bibtex)))
+#+end_src
 *** File Management
 Use =neotree=
 #+BEGIN_SRC emacs-lisp
@@ -537,57 +548,6 @@ British English is better
 #+begin_src emacs-lisp
   (setq ispell-dictionary "british")
 #+end_src
-*** Org Ref
-Citations made easier
-#+begin_src emacs-lisp
-  (use-package org-ref
-    :ensure t
-    :config
-    (setq reftex-default-bibliography "~/org/brain/brain.bib"
-          org-ref-default-bibliography "~/org/brain/brain.bib"
-          org-ref-pdf-directory "~/org/brain-pdfs/refs/"
-          bibtex-completion-bibliography "~/org/brain/brain.bib"))
-
-#+end_src
-*** Org Roam
-=org-roam= is an amazing way to build a concept mapping system and overall org
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package org-roam
-  ;;   :ensure t
-  ;;   :hook
-  ;;   (after-init . org-roam-mode)
-  ;;   :custom
-  ;;   (org-roam-directory "~/org/brain")
-  ;;   (org-roam-index-file "~/org/brain/root.org")
-  ;;   (org-roam-capture-templates '(
-  ;;                                 ("d" "default" plain (function org-roam--capture-get-point)
-  ;;                                  "%?"
-  ;;                                  :file-name "%<%Y%m%d%H%M%S>-${slug}"
-  ;;                                  :head "#+TITLE: ${title}\n#+LATEX_HEADER: \\usepackage{parskip}\n"
-  ;;                                  :unnarrowed t)))
-  ;;   :bind (:map org-roam-mode-map
-  ;;               (("C-c n l" . org-roam)
-  ;;                ("C-c n f" . org-roam-find-file)
-  ;;                ("C-c n j" . org-roam-jump-to-index)
-  ;;                ("C-c n b" . org-roam-switch-to-buffer)
-  ;;                ("C-c n g" . org-roam-graph))
-  ;;               :map org-mode-map
-  ;;               (("C-c n i" . org-roam-insert))))
-#+END_SRC
-Use =deft= to read/filter the notes and setup =el-patch= to handle the titles
-#+BEGIN_SRC emacs-lisp
-  (use-package deft
-    :ensure t
-    :after org
-    :bind
-    ("C-c n d" . deft)
-    :custom
-    (deft-recursive t)
-    (deft-use-filter-string-for-filename t)
-    (deft-default-extension "org")
-    (deft-directory "~/org/brain"))
-#+END_SRC
-
 *** Tasks and Org-Capture
 **** Basic Setup
 I have all my org files in a directory =~/org/= and I also have an index file which has all my TODOs in an outline and
@@ -610,7 +570,7 @@ I can also setup my archive file
 (setq org-archive-location
       (concat (org-file-path "archive.org") "::* From %s"))
 #+END_SRC
-I also setup a variable journal file
+I also setup a journal file
 #+begin_src emacs-lisp
   (setq org-journal-file
         (concat (file-name-as-directory "~/org/journals") "journal.org"))
@@ -748,17 +708,6 @@ We want sticky agendas
 #+begin_src emacs-lisp
   (setq org-agenda-sticky t)
 #+end_src
-*** Notes
-Use =org-noter= to make notes
-#+BEGIN_SRC emacs-lisp
-  (use-package org-noter
-      :after org
-      :ensure t
-      :config (setq org-noter-default-notes-file-names '("notes.org")
-                    org-noter-notes-search-path '("~/org/notes")
-                    org-noter-separate-notes-from-heading t))
-#+END_SRC
-Use
 *** Export
 Allow =babel= to evaluate emacs lisp, python, C, C++, OCaml and gnuplot code
 #+BEGIN_SRC emacs-lisp
@@ -879,91 +828,6 @@ Custom cite links
                (if (or (not desc) (equal 0 (search "citet*:" desc)))
                    (format "\\citet*{%s}" path)
                  (format "\\citet*[%s]{%s}" desc path))))))
-#+end_src
-*** Org Publish
-Clean-up functions for RE publish
-#+begin_src emacs-lisp
-    (defun re-html-publish-cleanup (props)
-      "Remove all unnecessary html files after publishing RE"
-      (delete-file "~/courses/semester-7/RE/ref.html")
-      (delete-file "~/courses/semester-7/RE/ref_bib.html"))
-
-    (defun re-latex-publish-cleanup (props)
-      "Remove all unnecessary files after publishing RE to pdf"
-      (delete-file "~/courses/semester-7/RE/index.bbl")
-      (delete-file "~/courses/semester-7/RE/index.pdf")
-      (delete-file "~/courses/semester-7/RE/index.tex")
-      (mapc 'delete-file (directory-files-recursively "~/courses/semester-7/RE/notes" ".pdf$"))
-      (mapc 'delete-file (directory-files-recursively "~/courses/semester-7/RE/notes" ".tex$")))
-#+end_src
-Clean-up functions for brain publishing
-#+begin_src emacs-lisp
-  (defun brain-latex-cleanup (props)
-    "Remove all unnecessary files after publishing brain"
-    (mapc 'delete-file (directory-files-recursively "~/org/brain" ".pdf$"))
-    (mapc 'delete-file (directory-files-recursively "~/org/brain" ".tex$"))
-    (mapc 'delete-file (directory-files-recursively "~/org/brain" ".bbl$")))
-#+end_src
-Publishing export
-#+begin_src emacs-lisp
-  (setq org-publish-project-alist
-        '(("html-notes"
-           :base-directory "~/courses/semester-7/RE/"
-           :exclude "README.org\\|misc/.*"
-           :with-properties t
-           :recursive t
-           :html-doctype "html5"
-           :publishing-directory "~/courses/semester-7/RE/docs"
-           :publishing-function org-html-publish-to-html
-           :section-numbers 3
-           :with-title t
-           :with-latex t
-           :with-toc nil
-           :html-head
-           "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://gongzhitaao.org/orgcss/org.css\">"
-           :html-head-extra
-           "<style>.MathJax_Display{margin: 1em 0em !important;}</style>"
-           :html-postamble
-           "<span class=\"author\">%a</span> / <span class=\"date\">%T</span>"
-           :headline-levels 4)
-          ("bib-html-copy"
-           :base-directory "~/courses/semester-7/RE/"
-           :base-extension "html"
-           :publishing-directory "~/courses/semester-7/RE/docs"
-           :publishing-function org-publish-attachment
-           :completion-function re-html-publish-cleanup
-           )
-          ("pdf-notes"
-           :base-directory "~/courses/semester-7/RE/"
-           :exclude "README.org\\|misc/.*"
-           :with-tags nil
-           :with-latex t
-           :with-properties nil
-           :recursive t
-           :publishing-directory "~/courses/semester-7/RE/pdfs"
-           :publishing-function org-latex-publish-to-pdf
-           :completion-function re-latex-publish-cleanup
-           :section-numbers 3
-           :with-title t
-           :with-toc nil
-           :headline-levels 4)
-          ("re-publish"
-           :components
-           ("html-notes" "bib-html-copy" "pdf-notes"))))
-#+end_src
-Utility function for making RE note
-#+begin_src emacs-lisp
-  (defun strange-loop/re-make-note ()
-    (interactive)
-    (let ((note-file (read-string "File: "))
-          (note-title (read-string "Title: ")))
-      (progn
-        (with-temp-file
-            (expand-file-name (format "%s.org" note-file) "~/courses/semester-7/RE/notes/")
-          (insert
-           (format "#+TITLE: %s\n#+LATEX_HEADER: \\usepackage{parskip}" note-title)))
-        (find-file
-         (expand-file-name (format "%s.org" note-file) "~/courses/semester-7/RE/notes/")))))
 #+end_src
 *** Help
 I have a file on my orgfiles which is a document on the keybindings in org. I want to open it quickly.
