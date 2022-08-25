@@ -1,6 +1,7 @@
 config.el
 quelpa/
 elpa/
+elpy/
 auto-save-list/
 projectile-bookmarks.eld
 bookmarks
