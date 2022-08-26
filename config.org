@@ -327,15 +327,6 @@ Use =helm-bibtex= to search my bibliography
     :bind
     (("C-c n B" . helm-bibtex)))
 #+end_src
-Use =helm-org-ql= to search my /annotated bibliography/
-#+begin_src emacs-lisp
-  (use-package helm-org-ql
-    :quelpa (helm-org-ql :fetcher github :repo "alphapapa/org-ql"
-                         :files ("helm-org-ql.el"))
-    :ensure t
-    :bind
-    (("C-c n a" . helm-org-ql)))
-#+end_src
 *** File Management
 Use =neotree=
 #+BEGIN_SRC emacs-lisp
@@ -695,15 +686,6 @@ I want to open my journal using =C-c j= and switch using =C-x j=
     (find-file "~/org/journals/journal.org"))
   (global-set-key (kbd "C-c j") 'strange-loop/open-journal)
 #+END_SRC
-I want to open my /annotated bibliography/ using =C-c n o=
-#+begin_src emacs-lisp
-  (defun strange-loop/open-bib ()
-    "Open the annotated bibliography."
-    (interactive)
-    (find-file (org-file-path "papers.org"))
-    (end-of-buffer))
-  (global-set-key (kbd "C-c n o") 'strange-loop/open-bib)
-#+end_src
 *** Org Agenda
 Filter =A= priority items from the complete TODO list
 #+begin_src emacs-lisp
