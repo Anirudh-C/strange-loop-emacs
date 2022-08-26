@@ -161,7 +161,11 @@ Toggle theme based on time of day
           (nano-theme-set-light)
         (nano-theme-set-dark))
       (nano-faces)
-      (nano-theme)))
+      (nano-theme)
+      (set-face-attribute 'mode-line-inactive nil :underline "#434C5E" :foreground "#2E3440")
+      (set-face-attribute 'mode-line nil :underline "#434C5E" :foreground "#2E3440")
+      (add-hook 'echo-area-clear-hook 'nano-theme--minibuffer)
+      (set-face-attribute 'nano-face-strong nil :weight 'medium)))
 
   ;; Set the starting theme as light
   (strange-loop/change-theme)
