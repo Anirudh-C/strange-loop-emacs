@@ -320,26 +320,7 @@ Ensure fuzzy search happens using =flx=
     :ensure t
     :config (helm-flx-mode 1))
 #+END_SRC
-Use =helm-bibtex= to search my bibliography
-#+begin_src emacs-lisp
-  (use-package helm-bibtex
-    :ensure t
-    :config
-    (setq bibtex-completion-bibliography "~/org/papers.bib"
-          bibtex-completion-library-path "~/org/pdfs/"
-          bibtex-completion-pdf-field "File")
-    :bind
-    (("C-c n b" . helm-bibtex)))
-#+end_src
-Use =helm-org-ql= to search my /annotated bibliography/
-#+begin_src emacs-lisp
-  (use-package helm-org-ql
-    :quelpa (helm-org-ql :fetcher github :repo "alphapapa/org-ql"
-                         :files ("helm-org-ql.el"))
-    :ensure t
-    :bind
-    (("C-c n a" . helm-org-ql)))
-#+end_src
+
 *** File Management
 Use =neotree=
 #+BEGIN_SRC emacs-lisp
@@ -475,6 +456,50 @@ Line numbers in python files
 #+begin_src emacs-lisp
   (add-hook 'python-mode-hook 'linum-mode)
 #+end_src
+*** Annotated Bibliography
+I want to open my /annotated bibliography/ using =C-c n o=
+#+begin_src emacs-lisp
+  (defun strange-loop/open-bib ()
+    "Open the annotated bibliography."
+    (interactive)
+    (find-file (org-file-path "papers.org"))
+    (end-of-buffer))
+  (global-set-key (kbd "C-c n o") 'strange-loop/open-bib)
+#+end_src
+Use =helm-bibtex= to search my bibliography
+#+begin_src emacs-lisp
+  (use-package helm-bibtex
+    :ensure t
+    :config
+    (setq bibtex-completion-bibliography "~/org/papers.bib"
+          bibtex-completion-library-path "~/org/pdfs/"
+          bibtex-completion-pdf-field "File")
+    :bind
+    (("C-c n b" . helm-bibtex)))
+#+end_src
+Use =helm-org-ql= to search my /annotated bibliography/
+#+begin_src emacs-lisp
+  (use-package helm-org-ql
+    :quelpa (helm-org-ql :fetcher github :repo "alphapapa/org-ql"
+                         :files ("helm-org-ql.el"))
+    :ensure t
+    :bind
+    (("C-c n s" . helm-org-ql)))
+#+end_src
+Adding new entries requires a bit of work. Assume that I've downloaded the required the pdf and have obtained the bibtex
+#+begin_src emacs-lisp
+  (defun strange-loop/add-bib-entry ()
+    "Create a new entry in my annotated bibliography"
+    (interactive)
+    (let ((input
+           (let ((keymap (copy-keymap minibuffer-local-map)))
+             (define-key keymap (kbd "RET") 'newline)
+             (read-from-minibuffer "Enter bibtex (C-j to finish): " nil keymap))))
+      (message
+       (shell-command-to-string (format "python3 /home/anirudh/.emacs.d/gen-bib-org.py \"%s\"" input)))))
+
+  (global-set-key (kbd "C-c n a") 'strange-loop/add-bib-entry)
+#+end_src
 *** RSS
 Use =elfeed=
 #+begin_src emacs-lisp
@@ -552,6 +577,7 @@ Use =elfeed=
       (elfeed-score-enable)
       (define-key elfeed-search-mode-map "=" elfeed-score-map)))
 #+end_src
+
 ** Org Mode
 #+BEGIN_SRC emacs-lisp
   (use-package org
@@ -699,15 +725,7 @@ I want to open my journal using =C-c j= and switch using =C-x j=
     (find-file "~/org/journals/journal.org"))
   (global-set-key (kbd "C-c j") 'strange-loop/open-journal)
 #+END_SRC
-I want to open my /annotated bibliography/ using =C-c n o=
-#+begin_src emacs-lisp
-  (defun strange-loop/open-bib ()
-    "Open the annotated bibliography."
-    (interactive)
-    (find-file (org-file-path "papers.org"))
-    (end-of-buffer))
-  (global-set-key (kbd "C-c n o") 'strange-loop/open-bib)
-#+end_src
+
 *** Org Agenda
 Filter =A= priority items from the complete TODO list
 #+begin_src emacs-lisp
