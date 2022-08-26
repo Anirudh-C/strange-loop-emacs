@@ -131,6 +131,7 @@ Load =nano-dark=
             :fetcher github
             :repo "rougier/nano-emacs"))
 
+  (require 'nano-theme-light)
   (require 'nano-theme-dark)
 
   (require 'nano-faces)
@@ -146,6 +147,38 @@ Load =nano-dark=
   (set-face-attribute 'mode-line nil :underline "#434C5E" :foreground "#2E3440")
   (add-hook 'echo-area-clear-hook 'nano-theme--minibuffer)
   (set-face-attribute 'nano-face-strong nil :weight 'medium)
+#+end_src
+Toggle theme based on time of day
+#+begin_src emacs-lisp
+  ;; Variable for light theme
+  (defvar strange-loop/light t)
+
+  (defun strange-loop/change-theme ()
+    "Changes the theme based on the current value of 'strange-loop/light"
+    (interactive)
+    (progn
+      (if strange-loop/light
+          (nano-theme-set-light)
+        (nano-theme-set-dark))
+      (nano-faces)
+      (nano-theme)))
+
+  ;; Set the starting theme as light
+  (strange-loop/change-theme)
+
+  (defun strange-loop/toggle-theme ()
+    "Toggles the theme from light to dark"
+    (interactive)
+    (setq strange-loop/light (not strange-loop/light))
+    (strange-loop/change-theme))
+
+  (defun strange-loop/set-dark ()
+    "Helper function to call at night and change the theme to dark"
+    (interactive)
+    (setq strange-loop/light nil)
+    (strange-loop/change-theme))
+
+  (run-at-time "18:00" nil #'strange-loop/set-dark)
 #+end_src
 
 ** User Interface
@@ -283,7 +316,7 @@ Ensure fuzzy search happens using =flx=
     :ensure t
     :config (helm-flx-mode 1))
 #+END_SRC
-Use =helm-bibtex=
+Use =helm-bibtex= to search my bibliography
 #+begin_src emacs-lisp
   (use-package helm-bibtex
     :ensure t
@@ -293,6 +326,15 @@ Use =helm-bibtex=
           bibtex-completion-pdf-field "File")
     :bind
     (("C-c n B" . helm-bibtex)))
+#+end_src
+Use =helm-org-ql= to search my /annotated bibliography/
+#+begin_src emacs-lisp
+  (use-package helm-org-ql
+    :quelpa (helm-org-ql :fetcher github :repo "alphapapa/org-ql"
+                         :files ("helm-org-ql.el"))
+    :ensure t
+    :bind
+    (("C-c n a" . helm-org-ql)))
 #+end_src
 *** File Management
 Use =neotree=
@@ -653,6 +695,15 @@ I want to open my journal using =C-c j= and switch using =C-x j=
     (find-file "~/org/journals/journal.org"))
   (global-set-key (kbd "C-c j") 'strange-loop/open-journal)
 #+END_SRC
+I want to open my /annotated bibliography/ using =C-c n o=
+#+begin_src emacs-lisp
+  (defun strange-loop/open-bib ()
+    "Open the annotated bibliography."
+    (interactive)
+    (find-file (org-file-path "papers.org"))
+    (end-of-buffer))
+  (global-set-key (kbd "C-c n o") 'strange-loop/open-bib)
+#+end_src
 *** Org Agenda
 Filter =A= priority items from the complete TODO list
 #+begin_src emacs-lisp
