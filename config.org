@@ -457,48 +457,38 @@ Line numbers in python files
   (add-hook 'python-mode-hook 'linum-mode)
 #+end_src
 *** Annotated Bibliography
-I want to open my /annotated bibliography/ using =C-c n o=
+Install pre-requisites for =bibliography-mode=
+#+begin_src emacs-lisp
+  (use-package org-inline-pdf
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook #'org-inline-pdf-mode))
+#+end_src
+Load up custom =bibliography-mode= and set path
+#+begin_src emacs-lisp
+  (quelpa '(bibliography
+            :fetcher github
+            :repo "anirudh-c/bibliography-mode"))
+  (require 'bibliography)
+  (setq bibliography-path "~/org/papers.org")
+#+end_src
+Auto load =bibliography-mode= only when in bibliography-path
+#+begin_src emacs-lisp
+    (defun strange-loop/bibliography-hook ()
+      "Hook to turn on bibliography-mode only when in bibliography-path"
+      (cond ((string= (file-truename bibliography-path) buffer-file-name)
+             (bibliography-mode t))))
+
+    (add-hook 'org-mode-hook 'strange-loop/bibliography-hook)
+#+end_src
+I want to open my /annotated bibliography/ using =C-c b o=
 #+begin_src emacs-lisp
   (defun strange-loop/open-bib ()
     "Open the annotated bibliography."
     (interactive)
-    (find-file (org-file-path "papers.org"))
+    (find-file bibliography-path)
     (end-of-buffer))
-  (global-set-key (kbd "C-c n o") 'strange-loop/open-bib)
-#+end_src
-Use =helm-bibtex= to search my bibliography
-#+begin_src emacs-lisp
-  (use-package helm-bibtex
-    :ensure t
-    :config
-    (setq bibtex-completion-bibliography "~/org/papers.bib"
-          bibtex-completion-library-path "~/org/pdfs/"
-          bibtex-completion-pdf-field "File")
-    :bind
-    (("C-c n b" . helm-bibtex)))
-#+end_src
-Use =helm-org-ql= to search my /annotated bibliography/
-#+begin_src emacs-lisp
-  (use-package helm-org-ql
-    :quelpa (helm-org-ql :fetcher github :repo "alphapapa/org-ql"
-                         :files ("helm-org-ql.el"))
-    :ensure t
-    :bind
-    (("C-c n s" . helm-org-ql)))
-#+end_src
-Adding new entries requires a bit of work. Assume that I've downloaded the required the pdf and have obtained the bibtex
-#+begin_src emacs-lisp
-  (defun strange-loop/add-bib-entry ()
-    "Create a new entry in my annotated bibliography"
-    (interactive)
-    (let ((input
-           (let ((keymap (copy-keymap minibuffer-local-map)))
-             (define-key keymap (kbd "RET") 'newline)
-             (read-from-minibuffer "Enter bibtex (C-j to finish): " nil keymap))))
-      (message
-       (shell-command-to-string (format "python3 /home/anirudh/.emacs.d/gen-bib-org.py \"%s\"" input)))))
-
-  (global-set-key (kbd "C-c n a") 'strange-loop/add-bib-entry)
+  (global-set-key (kbd "C-c b o") 'strange-loop/open-bib)
 #+end_src
 *** RSS
 Use =elfeed=
@@ -620,6 +610,14 @@ British English is better
 #+begin_src emacs-lisp
   (setq ispell-dictionary "british")
 #+end_src
+Inline images must not be transparent in dark mode
+#+begin_src emacs-lisp
+  (defun org--create-inline-image-advice (img)
+    (nconc img (list :background "#f8f8f8")))
+
+  (advice-add 'org--create-inline-image
+              :filter-return #'org--create-inline-image-advice)
+#+end_src
 *** Tasks and Org-Capture
 **** Basic Setup
 I have all my org files in a directory =~/org/= and I also have an index file which has all my TODOs in an outline and
@@ -649,7 +647,7 @@ I also setup a journal file
 #+end_src
 I need org-agenda to tell me my TODOs
 #+BEGIN_SRC emacs-lisp
-  (setq strange-loop/org-agenda-files (list org-index-file))
+  (setq strange-loop/org-agenda-files (list org-index-file "/home/anirudh/test.org"))
   (setq org-agenda-files strange-loop/org-agenda-files)
 #+END_SRC
 I want to archive my TODOs into =archive.org= when I finish them
@@ -695,13 +693,13 @@ Some basic keybindings
   (defun strange-loop/monthly-agenda (&optional split)
     "Visit the monthly org agenda, in the current window or a SPLIT."
     (interactive "P")
-    (org-agenda nil "m")
+    (org-agenda nil "M")
     (when (not split)
       (delete-other-windows)))
   (define-key global-map "\C-cl" 'org-store-link)
   (define-key global-map "\C-ca" 'org-agenda)
   (define-key global-map "\C-cd" 'strange-loop/daily-agenda)
-  (define-key global-map "\C-cm" 'strange-loop/monthly-agenda)
+  (define-key global-map "\C-cM" 'strange-loop/monthly-agenda)
   (define-key global-map "\C-cc" 'org-capture)
 #+END_SRC
 Hitting =C-c C-x C-s= should mark my todo as done and move it to =archive.org=
@@ -768,7 +766,7 @@ Custom agenda view
             (alltodo ""
                      ((org-agenda-skip-function '(strange-loop/skip-subtree-if-priority ?A))
                       (org-agenda-overriding-header "All normal priority tasks:")))))
-          ("m" "Monthly agenda and all TODOs"
+          ("M" "Monthly agenda and all TODOs"
            ((agenda "" ((org-agenda-overriding-header "Monthly Review")
                         (org-agenda-start-day "+1d")
                         (org-agenda-span 'month)
@@ -797,11 +795,9 @@ Make =babel= evaluate code blocks without confirmation
 #+BEGIN_SRC emacs-lisp
 (setq org-confirm-babel-evaluate nil)
 #+END_SRC
-Open the exported HTML files in FireFox
+Open the exported HTML files in eww
 #+BEGIN_SRC emacs-lisp
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "firefox")
-(setenv "BROWSER" "firefox")
+  (setq browse-url-browser-function 'eww-browse-url)
 #+END_SRC
 Org Beamer export
 #+BEGIN_SRC emacs-lisp
