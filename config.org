@@ -613,7 +613,7 @@ British English is better
 Inline images must not be transparent in dark mode
 #+begin_src emacs-lisp
   (defun org--create-inline-image-advice (img)
-    (nconc img (list :background "#f8f8f8")))
+    (nconc img (list :background "#ffffff")))
 
   (advice-add 'org--create-inline-image
               :filter-return #'org--create-inline-image-advice)
