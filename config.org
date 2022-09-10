@@ -472,21 +472,13 @@ Load up custom =bibliography-mode= and set path
   (require 'bibliography)
   (setq bibliography-path "~/org/papers.org")
 #+end_src
-Auto load =bibliography-mode= only when in bibliography-path
-#+begin_src emacs-lisp
-    (defun strange-loop/bibliography-hook ()
-      "Hook to turn on bibliography-mode only when in bibliography-path"
-      (cond ((string= (file-truename bibliography-path) buffer-file-name)
-             (bibliography-mode t))))
-
-    (add-hook 'org-mode-hook 'strange-loop/bibliography-hook)
-#+end_src
 I want to open my /annotated bibliography/ using =C-c b o=
 #+begin_src emacs-lisp
   (defun strange-loop/open-bib ()
     "Open the annotated bibliography."
     (interactive)
     (find-file bibliography-path)
+    (bibliography-mode t)
     (end-of-buffer))
   (global-set-key (kbd "C-c b o") 'strange-loop/open-bib)
 #+end_src
@@ -645,9 +637,9 @@ I also setup a journal file
   (setq org-journal-file
         (concat (file-name-as-directory "~/org/journals") "journal.org"))
 #+end_src
-I need org-agenda to tell me my TODOs
+I need org-agenda to tell me my TODOs and also search my annotated bibliography
 #+BEGIN_SRC emacs-lisp
-  (setq strange-loop/org-agenda-files (list org-index-file "/home/anirudh/test.org"))
+  (setq strange-loop/org-agenda-files (list org-index-file bibliography-path))
   (setq org-agenda-files strange-loop/org-agenda-files)
 #+END_SRC
 I want to archive my TODOs into =archive.org= when I finish them
