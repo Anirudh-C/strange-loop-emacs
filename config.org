@@ -304,7 +304,9 @@ Use =helm= for narrow list compression
     (setq helm-buffers-fuzzy-matching t)
     (setq helm-autoresize-mode t)
     (setq helm-buffer-max-length 40)
-    (setq helm-split-window-in-side-p nil))
+    (setq helm-split-window-in-side-p nil)
+    (set-face-attribute 'helm-separator nil
+                        :foreground "#677691"))
 #+end_src
 Setup =swiper= for search
 #+begin_src emacs-lisp
@@ -392,7 +394,7 @@ Install and configure =pdf-tools=
   :ensure t
   :config
   (pdf-tools-install)
-  (setq-default pdf-view-display-size 'fit-width))
+  (setq-default pdf-view-display-size 'fit-page))
 #+END_SRC
 Allow scrolling the PDF side-by-side with source code
 #+begin_src emacs-lisp
@@ -412,6 +414,17 @@ Allow scrolling the PDF side-by-side with source code
 
   (global-set-key (kbd "C-M-n") 'strange-loop/pdfview-scroll-up)
   (global-set-key (kbd "C-M-p") 'strange-loop/pdfview-scroll-down)
+#+end_src
+Sometimes I want to open a pdf file using xdg-open
+#+begin_src emacs-lisp
+  (defun strange-loop/pdf-xdg-open ()
+    "Open the file in the current pdf-tools buffer using xdg-open"
+    (interactive)
+    (call-process shell-file-name nil nil nil
+                  shell-command-switch
+                  (concat "xdg-open " buffer-file-name)))
+
+  (define-key pdf-view-mode-map (kbd "x") 'strange-loop/pdf-xdg-open)
 #+end_src
 *** Latex
 Install =auctex=
@@ -660,7 +673,7 @@ I want to know when I did these tasks as well
     (setq org-capture-templates '(("t" "Todo"
                                           entry
                                           (file org-index-file)
-                                          "* TODO %^{Todo} %^G \nSCHEDULED: %^{Schedule}T DEADLINE: %^{Deadline}T \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")))
+                                          "* TODO %^{Todo} %^G \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")))
   #+END_SRC
 - Journal template
   #+BEGIN_SRC emacs-lisp
