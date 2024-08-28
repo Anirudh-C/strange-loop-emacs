@@ -30,7 +30,12 @@ Customize puts a lot of stuff into my =init.el=
       (eval-buffer)
       (quelpa-self-upgrade)))
 #+end_src
-
+Silence the warnings
+#+begin_src emacs-lisp
+  (setq byte-compile-warnings '(not obsolete))
+  (setq warning-suppress-log-types '((comp) (bytecomp)))
+  (setq native-comp-async-report-warnings-errors 'silent)
+#+end_src
 ** Configure =use-package=
 Install =use-package= if not installed
 #+BEGIN_SRC emacs-lisp
@@ -124,66 +129,14 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
   (add-hook 'prog-mode-hook 'strange-loop/buf-show-trailing-whitespace)
 #+END_SRC
-*** Nano Emacs
-Load =nano-dark=
+Kanagawa theme
 #+begin_src emacs-lisp
-  (quelpa '(nano-emacs
-            :fetcher github
-            :repo "rougier/nano-emacs"))
-
-  (require 'nano-theme-light)
-  (require 'nano-theme-dark)
-
-  (require 'nano-faces)
-  (nano-faces)
-
-  (require 'nano-theme)
-  (nano-theme)
-
-  ;; Nano header & mode lines
-  (require 'nano-modeline)
-
-  (set-face-attribute 'mode-line-inactive nil :underline "#434C5E" :foreground "#2E3440")
-  (set-face-attribute 'mode-line nil :underline "#434C5E" :foreground "#2E3440")
-  (add-hook 'echo-area-clear-hook 'nano-theme--minibuffer)
-  (set-face-attribute 'nano-face-strong nil :weight 'medium)
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (load-theme 'kanagawa)
 #+end_src
-Toggle theme based on time of day
-#+begin_src emacs-lisp
-  ;; Variable for light theme
-  (defvar strange-loop/light t)
 
-  (defun strange-loop/change-theme ()
-    "Changes the theme based on the current value of 'strange-loop/light"
-    (interactive)
-    (progn
-      (if strange-loop/light
-          (nano-theme-set-light)
-        (nano-theme-set-dark))
-      (nano-faces)
-      (nano-theme)
-      (set-face-attribute 'mode-line-inactive nil :underline "#434C5E" :foreground "#2E3440")
-      (set-face-attribute 'mode-line nil :underline "#434C5E" :foreground "#2E3440")
-      (add-hook 'echo-area-clear-hook 'nano-theme--minibuffer)
-      (set-face-attribute 'nano-face-strong nil :weight 'medium)))
-
-  ;; Set the starting theme as light
-  (strange-loop/change-theme)
-
-  (defun strange-loop/toggle-theme ()
-    "Toggles the theme from light to dark"
-    (interactive)
-    (setq strange-loop/light (not strange-loop/light))
-    (strange-loop/change-theme))
-
-  (defun strange-loop/set-dark ()
-    "Helper function to call at night and change the theme to dark"
-    (interactive)
-    (setq strange-loop/light nil)
-    (strange-loop/change-theme))
-
-  (run-at-time "18:00" nil #'strange-loop/set-dark)
-#+end_src
+#+RESULTS:
+: t
 
 ** User Interface
 Window manager uses Alt as modifier
@@ -253,6 +206,16 @@ Capture note with buffer
     (switch-to-buffer "strange-loop-capture")
     (org-mode))
 #+end_src
+=atomic-chrome= to edit Firefox with Emacs
+#+begin_src emacs-lisp
+  (use-package atomic-chrome
+    :config
+    (atomic-chrome-start-server)
+    (setq atomic-chrome-server-ghost-text-port 4567)
+    (setq atomic-chrome-buffer-open-style 'full)
+    (setq atomic-chrome-url-major-mode-alist
+          '(("overleaf\\.com" . latex-mode))))
+#+end_src
 *** Projects
 **** Git
 I use git to manage my projects and =magit= provides the interface
@@ -283,7 +246,6 @@ Use =helm= for narrow list compression
     :ensure t
     :init
     (progn
-      (require 'helm-config)
       (setq helm-candidate-number-limit 100)
       ;; From https://gist.github.com/antifuchs/9238468
       (setq helm-idle-delay 0.0 ; update fast sources immediately (doesn't).
@@ -323,17 +285,6 @@ Ensure fuzzy search happens using =flx=
     :config (helm-flx-mode 1))
 #+END_SRC
 
-*** File Management
-Use =neotree=
-#+BEGIN_SRC emacs-lisp
-  (use-package neotree
-    :ensure t
-    :config
-    (require 'neotree)
-    (global-set-key (kbd "C-S-n") 'neotree-toggle)
-    (setq neo-theme 'nerd))
-#+END_SRC
-
 *** Multiple Cursors
 Use =multiple-cursors= behaviour
 #+BEGIN_SRC emacs-lisp
@@ -355,22 +306,6 @@ Use =ace-window= to manage windows
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     (setq aw-background nil))
 #+END_SRC
-
-*** Which Key
-Good to know what I'm pressing
-#+begin_src emacs-lisp
-  (use-package which-key
-    :ensure t
-    :config
-    (which-key-mode))
-#+end_src
-Which key in a posframe
-#+begin_src emacs-lisp
-  (use-package which-key-posframe
-    :ensure t
-    :config
-    (which-key-posframe-mode))
-#+end_src
 
 ** Environments
 *** Markdown
@@ -414,6 +349,7 @@ Allow scrolling the PDF side-by-side with source code
 
   (global-set-key (kbd "C-M-n") 'strange-loop/pdfview-scroll-up)
   (global-set-key (kbd "C-M-p") 'strange-loop/pdfview-scroll-down)
+  (setq pdf-view-midnight-colors '("#ffffff" . "#000000"))
 #+end_src
 Sometimes I want to open a pdf file using xdg-open
 #+begin_src emacs-lisp
@@ -456,15 +392,11 @@ Install =auctex=
 
 
 #+end_src
+I want auto-indent turned off in Latex buffers
+#+begin_src emacs-lisp
+  (add-hook 'latex-mode-hook (lambda () (electric-indent-local-mode -1)))
+#+end_src
 *** Python
-Install =elpy=
-#+BEGIN_SRC emacs-lisp
-  (use-package elpy
-    :ensure t
-    :init
-    (elpy-enable)
-    (setq elpy-rpc-python-command "python3.7"))
-#+END_SRC
 Line numbers in python files
 #+begin_src emacs-lisp
   (add-hook 'python-mode-hook 'linum-mode)
@@ -495,84 +427,6 @@ I want to open my /annotated bibliography/ using =C-c b o=
     (end-of-buffer))
   (global-set-key (kbd "C-c b o") 'strange-loop/open-bib)
 #+end_src
-*** RSS
-Use =elfeed=
-#+begin_src emacs-lisp
-  (defun concatenate-authors (authors-list)
-    "Given AUTHORS-LIST, list of plists; return string of all authors
-  concatenated."
-    (mapconcat
-     (lambda (author) (plist-get author :name))
-     authors-list ", "))
-
-  (defun my-search-print-fn (entry)
-    "Print ENTRY to the buffer."
-    (let* ((date (elfeed-search-format-date (elfeed-entry-date entry)))
-           (title (or (elfeed-meta entry :title)
-                      (elfeed-entry-title entry) ""))
-           (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
-           (feed (elfeed-entry-feed entry))
-           (feed-title
-            (when feed
-              (or (elfeed-meta feed :title) (elfeed-feed-title feed))))
-           (entry-authors (concatenate-authors
-                           (elfeed-meta entry :authors)))
-           (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
-           (tags-str (mapconcat
-                      (lambda (s) (propertize s 'face
-                                              'elfeed-search-tag-face))
-                      tags ","))
-           (title-width (- (window-width) 10
-                           elfeed-search-trailing-width))
-           (title-column (elfeed-format-column
-                          title (elfeed-clamp
-                                 elfeed-search-title-min-width
-                                 title-width
-                                 elfeed-search-title-max-width)
-                          :left))
-           (authors-width 135)
-           (authors-column (elfeed-format-column
-                            entry-authors (elfeed-clamp
-                                           elfeed-search-title-min-width
-                                           authors-width
-                                           80)
-                            :left)))
-
-      (insert (propertize date 'face 'elfeed-search-date-face) " ")
-
-      (insert (propertize title-column
-                          'face title-faces 'kbd-help title) " ")
-
-      (insert (propertize authors-column
-                          'face 'elfeed-search-date-face
-                          'kbd-help entry-authors) " ")
-
-      ;; (when feed-title
-        ;; (insert (propertize entry-authors
-                            ;; 'face 'elfeed-search-feed-face) " "))
-      ;; (when entry-authors
-      ;;   (insert (propertize feed-title
-      ;;                       'face 'elfeed-search-feed-face) " "))
-      (when tags
-        (insert "(" tags-str ")"))))
-
-  (use-package elfeed
-    :ensure t
-    :config
-    (global-set-key (kbd "C-x w") 'elfeed)
-    (setq elfeed-feeds
-          '("http://eprint.iacr.org/rss/rss.xml"))
-    (setq-default elfeed-search-filter "@1-week-ago")
-    (setq elfeed-search-print-entry-function #'my-search-print-fn))
-
-  (use-package elfeed-score
-    :ensure t
-    :config
-    (progn
-      (elfeed-score-enable)
-      (define-key elfeed-search-mode-map "=" elfeed-score-map)))
-#+end_src
-
 ** Org Mode
 #+BEGIN_SRC emacs-lisp
   (use-package org
@@ -606,14 +460,14 @@ I want alphabetical lists as well
 #+begin_src emacs-lisp
   (setq org-list-allow-alphabetical t)
 #+end_src
-I want spellcheck in org mode
+I want spellcheck in org mode and latex
 #+begin_src emacs-lisp
-  (add-hook 'org-mode-hook
-            #'(lambda () (flyspell-mode 1)))
+  (add-hook 'org-mode-hook 'flyspell-mode)
+  (add-hook 'LaTeX-mode-hook 'flyspell-mode)
 #+end_src
-British English is better
+Maybe a good dictionary?
 #+begin_src emacs-lisp
-  (setq ispell-dictionary "british")
+  (setq ispell-dictionary "american")
 #+end_src
 Inline images must not be transparent in dark mode
 #+begin_src emacs-lisp
@@ -796,6 +650,18 @@ Allow =babel= to evaluate emacs lisp, python, C, C++, OCaml and gnuplot code
        (ocaml . t)
        (gnuplot . t))))
 #+END_SRC
+Custom LNCS org article class
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org-latex 
+    (add-to-list 'org-latex-classes
+                 '("llncs"
+                   "\\documentclass[runningheads]{llncs}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+#+end_src
 Make =babel= evaluate code blocks without confirmation
 #+BEGIN_SRC emacs-lisp
 (setq org-confirm-babel-evaluate nil)
