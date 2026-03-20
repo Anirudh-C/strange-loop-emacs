@@ -60,8 +60,8 @@ Install =quelpa-use-package=
 
 ** Tell Emacs who I am
 #+BEGIN_SRC emacs-lisp
-(setq user-full-name "Anirudh C"
-      user-mail-address "anirudh.c@iiitb.ac.in")
+(setq user-full-name "Anirudh"
+      user-mail-address "anirudh.chandramouli@biu.ac.il")
 #+END_SRC
 
 ** Cosmetics
@@ -129,14 +129,29 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
   (add-hook 'prog-mode-hook 'strange-loop/buf-show-trailing-whitespace)
 #+END_SRC
-Kanagawa theme
+=dracula-theme=
 #+begin_src emacs-lisp
-  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-  (load-theme 'kanagawa)
-#+end_src
+  (use-package dracula-theme
+    :ensure t)
+  (load-theme 'dracula t)
 
-#+RESULTS:
-: t
+#+end_src
+Start client fullscreen
+#+begin_src emacs-lisp
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+end_src
+*** Modeline
+Clean the clutter of the modeline
+#+begin_src emacs-lisp
+  (setq-default mode-line-format
+                '((:eval (format "  %s  "
+                                 (propertize (buffer-name) 'face (if (buffer-modified-p)
+                                                                     'warning
+                                                                   'bold-italic))))
+                  (:eval (format "%s"
+                                 (propertize (capitalize (symbol-name major-mode)) 'face 'aw-key-face)))
+                  ))
+#+end_src
 
 ** User Interface
 Window manager uses Alt as modifier
@@ -205,16 +220,6 @@ Capture note with buffer
     (interactive)
     (switch-to-buffer "strange-loop-capture")
     (org-mode))
-#+end_src
-=atomic-chrome= to edit Firefox with Emacs
-#+begin_src emacs-lisp
-  (use-package atomic-chrome
-    :config
-    (atomic-chrome-start-server)
-    (setq atomic-chrome-server-ghost-text-port 4567)
-    (setq atomic-chrome-buffer-open-style 'full)
-    (setq atomic-chrome-url-major-mode-alist
-          '(("overleaf\\.com" . latex-mode))))
 #+end_src
 *** Projects
 **** Git
@@ -325,11 +330,13 @@ Highlighting using =markdown-mode=
 *** PDF
 Install and configure =pdf-tools=
 #+BEGIN_SRC emacs-lisp
-(use-package pdf-tools
-  :ensure t
-  :config
-  (pdf-tools-install)
-  (setq-default pdf-view-display-size 'fit-page))
+  (use-package pdf-tools
+    :ensure t
+    :config
+    (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-width
+                  pdf-view-midnight-colors '("#F8F8F2" . "#1D1F27"))
+    (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode))
 #+END_SRC
 Allow scrolling the PDF side-by-side with source code
 #+begin_src emacs-lisp
@@ -349,7 +356,6 @@ Allow scrolling the PDF side-by-side with source code
 
   (global-set-key (kbd "C-M-n") 'strange-loop/pdfview-scroll-up)
   (global-set-key (kbd "C-M-p") 'strange-loop/pdfview-scroll-down)
-  (setq pdf-view-midnight-colors '("#ffffff" . "#000000"))
 #+end_src
 Sometimes I want to open a pdf file using xdg-open
 #+begin_src emacs-lisp
@@ -389,8 +395,6 @@ Install =auctex=
          :help "Compile latex using Makefile"
          ))
       (setq TeX-command-default "Docker compile")))
-
-
 #+end_src
 I want auto-indent turned off in Latex buffers
 #+begin_src emacs-lisp
@@ -400,32 +404,6 @@ I want auto-indent turned off in Latex buffers
 Line numbers in python files
 #+begin_src emacs-lisp
   (add-hook 'python-mode-hook 'linum-mode)
-#+end_src
-*** Annotated Bibliography
-Install pre-requisites for =bibliography-mode=
-#+begin_src emacs-lisp
-  (use-package org-inline-pdf
-    :ensure t
-    :config
-    (add-hook 'org-mode-hook #'org-inline-pdf-mode))
-#+end_src
-Load up custom =bibliography-mode= and set path
-#+begin_src emacs-lisp
-  (quelpa '(bibliography
-            :fetcher github
-            :repo "anirudh-c/bibliography-mode"))
-  (require 'bibliography)
-  (setq bibliography-path "~/org/papers.org")
-#+end_src
-I want to open my /annotated bibliography/ using =C-c b o=
-#+begin_src emacs-lisp
-  (defun strange-loop/open-bib ()
-    "Open the annotated bibliography."
-    (interactive)
-    (find-file bibliography-path)
-    (bibliography-mode t)
-    (end-of-buffer))
-  (global-set-key (kbd "C-c b o") 'strange-loop/open-bib)
 #+end_src
 ** Org Mode
 #+BEGIN_SRC emacs-lisp
@@ -440,21 +418,14 @@ How I want org-mode to look
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
   ;; Hide the leading stars and start org mode with indented structure
   (setq org-hide-leading-stars t
-        org-startup-indented t
-        org-startup-folded t)
+        org-startup-indented t)
   ;; Use the nice down arrow to display folded content in org headlines
-  (setq org-ellipsis "⤵")
-#+END_SRC
-=org-bullets= need to look good
-#+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
-    :ensure t
-    :config
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+  (setq org-ellipsis "…")
 #+END_SRC
 The emphasis markers in org mode aren't the *best*
 #+BEGIN_SRC emacs-lisp
 (setq org-hide-emphasis-markers t)
+(setq org-pretty-entities t)
 #+END_SRC
 I want alphabetical lists as well
 #+begin_src emacs-lisp
@@ -476,6 +447,12 @@ Inline images must not be transparent in dark mode
 
   (advice-add 'org--create-inline-image
               :filter-return #'org--create-inline-image-advice)
+#+end_src
+Finally, =org-modern=
+#+begin_src emacs-lisp
+  (use-package org-modern
+    :ensure t)
+  (with-eval-after-load 'org (global-org-modern-mode))
 #+end_src
 *** Tasks and Org-Capture
 **** Basic Setup
@@ -506,7 +483,7 @@ I also setup a journal file
 #+end_src
 I need org-agenda to tell me my TODOs and also search my annotated bibliography
 #+BEGIN_SRC emacs-lisp
-  (setq strange-loop/org-agenda-files (list org-index-file bibliography-path))
+  (setq strange-loop/org-agenda-files (list org-index-file))
   (setq org-agenda-files strange-loop/org-agenda-files)
 #+END_SRC
 I want to archive my TODOs into =archive.org= when I finish them
@@ -530,7 +507,7 @@ I want to know when I did these tasks as well
                                           "* TODO %^{Todo} %^G \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%?")))
   #+END_SRC
 - Journal template
-  #+BEGIN_SRC emacs-lisp
+p  #+BEGIN_SRC emacs-lisp
     (add-to-list 'org-capture-templates '("j" "Journal Entry"
                                           entry
                                           (file+olp+datetree org-journal-file)
@@ -619,8 +596,10 @@ Custom agenda view
            ((tags "PRIORITY=\"A\""
                   ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
                    (org-agenda-overriding-header "High-priority unfinished tasks:")))
-            (tags "coursework"
-                  ((org-agenda-overriding-header "Course Related Items")))
+            (tags "research"
+                  ((org-agenda-overriding-header "Research")))
+            (tags "bureaucracy"
+                  ((org-agenda-overriding-header "Death, taxes and ...")))
             (agenda "" ((org-agenda-span 1)))
             (alltodo ""
                      ((org-agenda-skip-function '(strange-loop/skip-subtree-if-priority ?A))
@@ -639,16 +618,14 @@ We want sticky agendas
   (setq org-agenda-sticky t)
 #+end_src
 *** Export
-Allow =babel= to evaluate emacs lisp, python, C, C++, OCaml and gnuplot code
+Allow =babel= to evaluate emacs lisp, python, C
 #+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'org
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((emacs-lisp . t)
        (python . t)
-       (C . t)
-       (ocaml . t)
-       (gnuplot . t))))
+       (C . t))))
 #+END_SRC
 Custom LNCS org article class
 #+begin_src emacs-lisp
