@@ -129,13 +129,25 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
   (add-hook 'prog-mode-hook 'strange-loop/buf-show-trailing-whitespace)
 #+END_SRC
-=dracula-theme=
+Switch between modus themes
 #+begin_src emacs-lisp
-  (use-package dracula-theme
-    :ensure t)
-  (load-theme 'dracula t)
+  (defun strangeloop/toggle-modus-theme ()
+    "Toggle between `modus-operandi' and `modus-vivendi' themes."
+    (interactive)
+    (if (eq (car custom-enabled-themes) 'modus-vivendi)
+        (progn
+          (disable-theme 'modus-vivendi)
+          (load-theme 'modus-operandi t))
+      (progn
+        (disable-theme 'modus-operandi)
+        (load-theme 'modus-vivendi t))))
 
+  (global-set-key (kbd "C-c m") #'strangeloop/toggle-modus-theme)
 #+end_src
+
+#+RESULTS:
+: t
+
 Start client fullscreen
 #+begin_src emacs-lisp
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -335,13 +347,13 @@ Highlighting using =markdown-mode=
 *** PDF
 Install and configure =pdf-tools=
 #+BEGIN_SRC emacs-lisp
-  (use-package pdf-tools
-    :ensure t
-    :config
-    (pdf-tools-install)
-    (setq-default pdf-view-display-size 'fit-width
-                  pdf-view-midnight-colors '("#F8F8F2" . "#1D1F27"))
-    (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode))
+    (use-package pdf-tools
+      :ensure t
+      :config
+      (pdf-tools-install)
+      (setq-default pdf-view-display-size 'fit-width
+                    pdf-view-midnight-colors '("#ffffff" . "#111111"))
+      (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode))
 #+END_SRC
 Allow scrolling the PDF side-by-side with source code
 #+begin_src emacs-lisp
