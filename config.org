@@ -129,20 +129,26 @@ I don't like trailing whitespaces as it messes so many things up
     (setq show-trailing-whitespace t))
   (add-hook 'prog-mode-hook 'strange-loop/buf-show-trailing-whitespace)
 #+END_SRC
-Switch between modus themes
+Kanagawa theme
 #+begin_src emacs-lisp
-  (defun strangeloop/toggle-modus-theme ()
-    "Toggle between `modus-operandi' and `modus-vivendi' themes."
+(use-package kanagawa-themes
+  :ensure t
+  :config
+  (load-theme 'kanagawa-wave t))
+#+end_src
+Cycle between kanagawa themes
+#+begin_src emacs-lisp
+  (defun strangeloop/toggle-kanagawa-theme ()
+    "Cycle between `kanagawa-wave', `kanagawa-dragon', and `kanagawa-lotus' themes."
     (interactive)
-    (if (eq (car custom-enabled-themes) 'modus-vivendi)
-        (progn
-          (disable-theme 'modus-vivendi)
-          (load-theme 'modus-operandi t))
-      (progn
-        (disable-theme 'modus-operandi)
-        (load-theme 'modus-vivendi t))))
+    (let* ((themes '(kanagawa-wave kanagawa-dragon kanagawa-lotus))
+           (current (car custom-enabled-themes))
+           (next (or (cadr (memq current themes)) (car themes))))
+      (when current
+        (disable-theme current))
+      (load-theme next t)))
 
-  (global-set-key (kbd "C-c m") #'strangeloop/toggle-modus-theme)
+  (global-set-key (kbd "C-c m") #'strangeloop/toggle-kanagawa-theme)
 #+end_src
 
 #+RESULTS:
@@ -151,18 +157,6 @@ Switch between modus themes
 Start client fullscreen
 #+begin_src emacs-lisp
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-#+end_src
-*** Modeline
-Clean the clutter of the modeline
-#+begin_src emacs-lisp
-  (setq-default mode-line-format
-                '((:eval (format "  %s  "
-                                 (propertize (buffer-name) 'face (if (buffer-modified-p)
-                                                                     'warning
-                                                                   'bold-italic))))
-                  (:eval (format "%s"
-                                 (propertize (capitalize (symbol-name major-mode)) 'face 'aw-key-face)))
-                  ))
 #+end_src
 
 ** User Interface
@@ -352,7 +346,7 @@ Install and configure =pdf-tools=
       :config
       (pdf-tools-install)
       (setq-default pdf-view-display-size 'fit-width
-                    pdf-view-midnight-colors '("#ffffff" . "#111111"))
+                    pdf-view-midnight-colors '("#545464" . "#f5f0c8"))
       (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode))
 #+END_SRC
 Allow scrolling the PDF side-by-side with source code
