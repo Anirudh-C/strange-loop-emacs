@@ -1,4 +1,7 @@
 * strange-loop-emacs
+#+begin_src emacs-lisp :tangle config.el :comments no
+;; -*- lexical-binding: t; -*-
+#+end_src
 ** Setup =package.el=
 Load =package.el=
 #+BEGIN_SRC emacs-lisp
@@ -131,10 +134,10 @@ I don't like trailing whitespaces as it messes so many things up
 #+END_SRC
 Kanagawa theme
 #+begin_src emacs-lisp
-(use-package kanagawa-themes
-  :ensure t
-  :config
-  (load-theme 'kanagawa-wave t))
+  (use-package kanagawa-themes
+    :ensure t
+    :config
+    (load-theme 'kanagawa-wave t))
 #+end_src
 Cycle between kanagawa themes
 #+begin_src emacs-lisp
@@ -390,7 +393,7 @@ Install =auctex=
       (add-to-list
        'TeX-command-list
        '("Docker compile"
-         "docker run --rm -i -u $(id -u):$(id -g) -v \"$PWD\":/usr/src/app -w /usr/src/app texlive/texlive latexmk -pdf %s"
+         "docker run --rm -i -u $(id -u):$(id -g) -v \"$PWD\":/usr/src/app -w /usr/src/app texlive/texlive:TL2025-historic latexmk -pdf %s"
          TeX-run-command
          nil
          t
