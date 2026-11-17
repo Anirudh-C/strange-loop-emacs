@@ -1,12 +1,25 @@
 [Unit]
 Description=Emacs: the extensible, self-documenting text editor
+Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
+StartLimitIntervalSec=300
+StartLimitBurst=5
 
 [Service]
-Type=forking
-ExecStart=/usr/local/bin/emacs-26.2 --daemon
-ExecStop=/usr/local/bin/emacsclient --eval "(progn (setq kill-emacs-hook 'nil) (kill-emacs))"
-Restart=always
-TimeoutStartSec=0
+# --fg-daemon + Type=notify: Emacs tells systemd when it's ready (or not),
+# instead of relying on fork tracking. That fork tracking breaks under snap,
+# because `snap run` moves the process into its own snap.emacs.*.scope cgroup.
+Type=notify
+NotifyAccess=all
+ExecStart=/snap/bin/emacs --fg-daemon
+# Let kill-emacs-hook run so org-babel cleans up /tmp/babel-* dirs.
+ExecStop=/snap/bin/emacsclient --eval "(kill-emacs)"
+SuccessExitStatus=15
+# Only restart on real crashes, with a cap instead of looping forever.
+Restart=on-failure
+RestartSec=5
+
+# Fail loudly instead of hanging forever if init gets stuck.
+TimeoutStartSec=180
 
 [Install]
 WantedBy=default.target
