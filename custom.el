@@ -8,7 +8,25 @@
  '(ivy-virtual-abbreviate 'full)
  '(org-agenda-files '("/home/strangeloop/org/index.org"))
  '(package-selected-packages
-   '(kanagawa-themes org-brain-walk modus-themes org-modern hc-zenburn-theme zenburn-theme autothemer atomic-chrome company helm-org-ql org-inline-pdf bibliography helm-bibtex org-roam-ui websocket orgalist org mini-frame nano-emacs lambda-line lambda-themes quelpa-use-package quelpa org-contrib elfeed-score elfeed solo-jazz-theme epc auctex org-ref helm-projectile swiper-helm helm-flx helm simple-modeline doom-modeline org-roam-server engine-mode which-key-posframe which-key org-pomodoro org-plus-contrib elpy deft el-patch org-noter org-roam org-bullets nov pdf-tools cider clojure-mode elm-mode rjsx-mode json-mode impatient-mode htmlize simple-httpd company-web web-mode emmet-mode rainbow-mode markdown-mode god-mode ace-window browse-kill-ring easy-kill multiple-cursors neotree ivy-rich counsel flx ivy projectile magit undo-tree restart-emacs try telephone-line dracula-theme rainbow-delimiters use-package))
+   '(ace-window atomic-chrome auctex autothemer bibliography
+                browse-kill-ring cider citar citar-org-roam
+                clojure-mode company company-web counsel deft
+                doom-modeline dracula-theme easy-kill el-patch elfeed
+                elfeed-score elm-mode elpy emmet-mode engine-mode epc
+                flx god-mode gptel hc-zenburn-theme helm helm-bibtex
+                helm-flx helm-org-ql helm-projectile htmlize
+                impatient-mode ivy ivy-rich json-mode kanagawa-themes
+                lambda-line lambda-themes magit markdown-mode
+                mini-frame modus-themes multiple-cursors nano-emacs
+                neotree nov org org-bullets org-contrib org-inline-pdf
+                org-modern org-noter org-plus-contrib org-pomodoro
+                org-ref org-roam org-roam-server org-roam-ui orgalist
+                pdf-tools projectile quelpa quelpa-use-package
+                rainbow-delimiters rainbow-mode restart-emacs
+                rjsx-mode simple-httpd simple-modeline solo-jazz-theme
+                swiper-helm telephone-line try undo-tree use-package
+                web-mode websocket which-key which-key-posframe
+                zenburn-theme))
  '(pdf-view-midnight-colors '("#dcdccc" . "#1c1c1c"))
  '(send-mail-function 'mailclient-send-it)
  '(which-key-posframe-mode t))

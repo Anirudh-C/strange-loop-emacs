@@ -550,7 +550,7 @@ Finally, =org-modern=
 **** Agenda Views
 
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-files '("~/org/inbox.org" "~/org/projects.org"))
+(setq org-agenda-files '("~/org/inbox.org" "~/org/projects.org" "~/org/days/"))
 (setq org-agenda-include-diary t)
 
 (setq org-agenda-custom-commands
@@ -710,7 +710,24 @@ Custom cite links
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam-directory "~/brain")
+  (org-roam-directory (file-truename "~/org/"))
+  ;; Model proposals and the search index are not part of the graph
+  (org-roam-file-exclude-regexp "\\(staging\\|\\.brain\\)/")
+  ;; Share ~/org/days/ with the C-c d daily-file command
+  (org-roam-dailies-directory "days/")
+  (org-roam-dailies-capture-templates
+   '(("d" "log" entry "* %<%H:%M> %?"
+      :target (file+head+olp "%<%Y-%m-%d>.org"
+                             "#+TITLE: %<%A, %B %d>\n\n* Morning Setup\n\n* Schedule\n\n* Tasks\n\n* Log\n\n* Evening Review\n"
+                             ("Log")))))
+  (org-roam-capture-templates
+   '(("d" "note" plain "%?"
+      :target (file+head "notes/${slug}.org" "#+TITLE: ${title}\n#+FILETAGS:\n")
+      :unnarrowed t)
+     ("r" "reference (paper)" plain
+      "* Summary\n%?\n* Key claims\n\n* Questions\n"
+      :target (file+head "refs/${slug}.org" "#+TITLE: ${title}\n#+FILETAGS: :ref:\n")
+      :unnarrowed t)))
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n g" . org-roam-graph)
@@ -725,14 +742,44 @@ Custom cite links
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 #+end_src
-*** Brain
+*** Second Brain (local LLM)
+References: BibTeX only, in =~/org/refs/library.bib= (also indexed by =brain= search); literature notes in =~/org/refs/=.
 #+begin_src emacs-lisp
-  (use-package org-brain-walk
-    :quelpa (org-brain-walk :fetcher github :repo "Anirudh-C/org-brain-walk")
-    :after org-roam
+  ;; A stale package cache makes :ensure fail with 404s; refresh once if anything is missing.
+  (unless (seq-every-p #'package-installed-p '(gptel citar citar-org-roam))
+    (package-refresh-contents))
+  (use-package citar
+    :ensure t
+    :custom
+    (citar-bibliography '("~/org/refs/library.bib"))
+    (citar-notes-paths '("~/org/refs/"))
+    (org-cite-global-bibliography '("~/org/refs/library.bib"))
+    (org-cite-insert-processor 'citar)
+    (org-cite-follow-processor 'citar)
+    (org-cite-activate-processor 'citar)
+    :bind (("C-c n b" . citar-open-notes)))
+
+  (use-package citar-org-roam
+    :ensure t
+    :after (citar org-roam)
+    :custom
+    (citar-org-roam-subdir "refs")
+    (citar-org-roam-note-title-template "${author} (${year}): ${title}")
     :config
-    (org-brain-walk-mode 1)
-    (define-key org-brain-walk-mode-map (kbd "C-c b") org-brain-walk-map))
+    (citar-org-roam-mode 1))
+#+end_src
+=gptel= talks to the local Ollama model; =brain.el= adds ask / process / review / staging on =C-c n a/p/r/s=.
+Source lives in =~/Projects/opencode-config/emacs/brain.el=.
+#+begin_src emacs-lisp
+  (use-package gptel
+    :ensure t
+    :custom
+    (gptel-default-mode 'org-mode)
+    (gptel-include-reasoning nil)
+    :config
+    (load (expand-file-name "~/.emacs.d/lisp/brain.el"))
+    (setq gptel-backend brain-backend
+          gptel-model brain-model))
 #+end_src
 ** Completion
 I use =company= for an inline completion
